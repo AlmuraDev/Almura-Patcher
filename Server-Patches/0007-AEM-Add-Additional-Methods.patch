@@ -1,4 +1,4 @@
-From f7d85f13574dba2956a3c9092a698b0390df2b7c Mon Sep 17 00:00:00 2001
+From 2d1d6fedd270e41a1bf96876e0b6a406d6215f69 Mon Sep 17 00:00:00 2001
 From: hcherndon <hcherndon@gmail.com>
 Date: Wed, 2 Oct 2013 23:01:47 -0700
 Subject: [PATCH] (AEM) Add Additional Methods
@@ -23,7 +23,7 @@ index bb13b41..036516b 100644
 +    // AEM End
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index f639ff7..0ccad0b 100644
+index ef5f43f..083ca87 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1157,7 +1157,7 @@ public final class CraftServer implements Server {
@@ -31,7 +31,7 @@ index f639ff7..0ccad0b 100644
  
      public void setWhitelist(boolean value) {
 -        playerList.hasWhitelist = value;
-+        playerList.setHasWhitelist(value);
++        playerList.setHasWhitelist(value); // AEM
          console.getPropertyManager().a("white-list", value);
      }
  

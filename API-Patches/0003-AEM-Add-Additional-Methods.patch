@@ -1,4 +1,4 @@
-From 70074d1b27c858e028a5ab9d5e50e5ef9cf9193b Mon Sep 17 00:00:00 2001
+From ede503e02baaa01a724fbeabb30ed14c4f7d8bda Mon Sep 17 00:00:00 2001
 From: hcherndon <hcherndon@gmail.com>
 Date: Wed, 2 Oct 2013 23:00:00 -0700
 Subject: [PATCH] (AEM) Add Additional Methods
@@ -10,14 +10,15 @@ Subject: [PATCH] (AEM) Add Additional Methods
   the ping list
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 7a9502a..6f053d6 100644
+index 7a9502a..19ee9aa 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -654,4 +654,18 @@ public final class Bukkit {
+@@ -654,4 +654,20 @@ public final class Bukkit {
      public static ScoreboardManager getScoreboardManager() {
          return server.getScoreboardManager();
      }
 +
++    // AEM Start
 +    /**
 +     * @see Server#setMaxPlayers(int)
 +     */
@@ -31,6 +32,7 @@ index 7a9502a..6f053d6 100644
 +    public static void setMotd(String motd) {
 +        server.setMotd(motd);
 +    }
++    // AEM End
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
 index aa45f16..62f872b 100644

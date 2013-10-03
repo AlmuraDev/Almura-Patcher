@@ -1,4 +1,4 @@
-From 4075649ad3bb82d9717b92af2b7f35bd1b25cb71 Mon Sep 17 00:00:00 2001
+From 04991db50e4ede28929f10564edae3c621e83c80 Mon Sep 17 00:00:00 2001
 From: hcherndon <hcherndon@gmail.com>
 Date: Wed, 2 Oct 2013 23:59:27 -0500
 Subject: [PATCH] (AEM) Use AEMSpigot as name
@@ -27,7 +27,7 @@ index fb8bc87..4a381a4 100644
  
      public void sendMessage(ChatMessage chatmessage) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 0ccad0b..83e14f7 100644
+index f639ff7..ef5f43f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -135,7 +135,7 @@ import com.google.common.collect.MapMaker;
