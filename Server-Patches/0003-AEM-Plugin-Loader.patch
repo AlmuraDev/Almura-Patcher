@@ -1,0 +1,279 @@
+From 47248406a54d5ef61942cd6d5294a9e35437e596 Mon Sep 17 00:00:00 2001
+From: Chris Sanders <zidane@outlook.com>
+Date: Fri, 21 Dec 2012 22:08:09 -0600
+Subject: [PATCH] (AEM) Plugin Loader
+
+- Compatible with Java 1.7 Update 25 or above
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 404a626..f639ff7 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -144,7 +144,7 @@ public final class CraftServer implements Server {
+     private final SimpleHelpMap helpMap = new SimpleHelpMap(this);
+     private final StandardMessenger messenger = new StandardMessenger();
+     private final PluginManager pluginManager = new SimplePluginManager(this, commandMap);
+-    protected final MinecraftServer console;
++    public final MinecraftServer console; // AEM protected -> public
+     protected final DedicatedPlayerList playerList;
+     private final Map<String, World> worlds = new LinkedHashMap<String, World>();
+     private YamlConfiguration configuration;
+diff --git a/src/main/java/org/bukkit/plugin/java/AEMMethodVisitor.java b/src/main/java/org/bukkit/plugin/java/AEMMethodVisitor.java
+new file mode 100644
+index 0000000..6298117
+--- /dev/null
++++ b/src/main/java/org/bukkit/plugin/java/AEMMethodVisitor.java
+@@ -0,0 +1,20 @@
++package org.bukkit.plugin.java;
++
++import org.objectweb.asm.MethodVisitor;
++import org.objectweb.asm.Opcodes;
++
++public class AEMMethodVisitor extends MethodVisitor {
++
++    public AEMMethodVisitor(MethodVisitor parent) {
++        super(Opcodes.ASM4, parent);
++    }
++
++    @Override
++    public void visitMethodInsn(int opcode, String owner, String name, String desc) {
++        if (owner.equals("java/lang/Class") && name.equals("forName")) {
++            owner = "org/bukkit/plugin/java/ClassRemapper";
++            name = "fakeForName";
++        }
++        super.visitMethodInsn(opcode, owner, name, desc);
++    }
++}
+diff --git a/src/main/java/org/bukkit/plugin/java/AEMRemappingClassAdapter.java b/src/main/java/org/bukkit/plugin/java/AEMRemappingClassAdapter.java
+new file mode 100644
+index 0000000..e9753a9
+--- /dev/null
++++ b/src/main/java/org/bukkit/plugin/java/AEMRemappingClassAdapter.java
+@@ -0,0 +1,19 @@
++package org.bukkit.plugin.java;
++
++import org.objectweb.asm.ClassVisitor;
++import org.objectweb.asm.MethodVisitor;
++import org.objectweb.asm.commons.Remapper;
++import org.objectweb.asm.commons.RemappingClassAdapter;
++
++public class AEMRemappingClassAdapter extends RemappingClassAdapter {
++
++    public AEMRemappingClassAdapter(ClassVisitor visitor, Remapper remapper) {
++        super(visitor, remapper);
++    }
++
++    @Override
++    protected MethodVisitor createRemappingMethodAdapter(int arg0, String arg1,
++            MethodVisitor parent) {
++        return super.createRemappingMethodAdapter(arg0, arg1, new AEMMethodVisitor(parent));
++    }
++}
+diff --git a/src/main/java/org/bukkit/plugin/java/ClassRemapper.java b/src/main/java/org/bukkit/plugin/java/ClassRemapper.java
+new file mode 100644
+index 0000000..2b6e510
+--- /dev/null
++++ b/src/main/java/org/bukkit/plugin/java/ClassRemapper.java
+@@ -0,0 +1,87 @@
++package org.bukkit.plugin.java;
++
++import java.io.IOException;
++import java.io.InputStream;
++
++import org.objectweb.asm.ClassReader;
++import org.objectweb.asm.ClassWriter;
++import org.objectweb.asm.commons.Remapper;
++
++/**
++ * Re-maps class references from non-versioned packages to the correct versioned package
++ */
++public class ClassRemapper extends Remapper {
++    private static final String[] PACKAGE_ROOTS = { "net/minecraft/server/", "org/bukkit/craftbukkit/" };
++    private static final String version = "v1_6_R3"; //TODO: Keep updated for API version
++    private static final ClassRemapper instance = new ClassRemapper();
++
++    @Override
++    public String mapDesc(String desc) {
++        return filter(desc);
++    }
++
++    @Override
++    public String map(String typeName) {
++        return filter(typeName);
++    }
++
++    private static String filter(String text) {
++        int idx;
++        for (String packageRoot : PACKAGE_ROOTS) {
++            if ((idx = text.indexOf(packageRoot)) != -1) {
++                return convert(text, packageRoot, idx);
++            }
++        }
++        return text;
++    }
++
++    private static String convert(String text, String packagePath, int startIndex) {
++        String name = text.substring(startIndex + packagePath.length());
++        String header = text.substring(0, startIndex);
++        if (name.startsWith("v") && !name.contains("CraftServer")) {
++            int firstidx = name.indexOf('_');
++            if (firstidx != -1) {
++                // Check if the major version is a valid number
++                String major = name.substring(1, firstidx);
++                try {
++                    Integer.parseInt(major);
++                    // Major test success
++                    int end = name.indexOf('/');
++                    if (end != -1) {
++                        // Get rid of the version (removes 'v1_4_5.')
++                        name = name.substring(end + 1);
++                    }
++                } catch (NumberFormatException ex) {
++                    // Major test fail
++                }
++            }
++        } else if (name.startsWith("CraftServer")) {
++            // We keep the CraftServer on the versioned package path
++            return header + packagePath  + version + "/" + name;
++        }
++        return header + packagePath + name;
++    }
++
++    public static byte[] remap(InputStream stream) throws IOException {
++        ClassReader classReader = new ClassReader(stream);
++        ClassWriter classWriter = new ClassWriter(classReader, 0);
++        classReader.accept(new AEMRemappingClassAdapter(classWriter, instance), ClassReader.EXPAND_FRAMES);
++        return classWriter.toByteArray();
++    }
++
++    public static Class<?> fakeForName(String name) throws ClassNotFoundException {
++        return fakeForName(name, sun.reflect.Reflection.getCallerClass().getClassLoader());
++    }
++
++    public static Class<?> fakeForName(String name, ClassLoader loader) throws ClassNotFoundException {
++        return fakeForName(name, true, loader);
++    }
++
++    public static Class<?> fakeForName(String name, boolean initialize) throws ClassNotFoundException {
++        return fakeForName(name, sun.reflect.Reflection.getCallerClass().getClassLoader());
++    }
++
++    public static Class<?> fakeForName(String name, boolean initialize, ClassLoader loader) throws ClassNotFoundException {
++        return Class.forName(filter(name.replace('.', '/')).replace('/', '.'), initialize, loader);
++    }
++}
+diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
+new file mode 100644
+index 0000000..0996fc1
+--- /dev/null
++++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
+@@ -0,0 +1,106 @@
++package org.bukkit.plugin.java;
++
++import java.io.InputStream;
++import java.net.URL;
++import java.net.URLClassLoader;
++import java.security.CodeSigner;
++import java.security.CodeSource;
++import java.net.JarURLConnection;
++import java.util.HashMap;
++import java.util.Map;
++import java.util.Set;
++
++/**
++ * A ClassLoader for plugins, to allow shared classes across multiple plugins
++ */
++public class PluginClassLoader extends URLClassLoader {
++    private final JavaPluginLoader loader;
++    private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
++    private static final CodeSigner[] emptySigner = new CodeSigner[0];
++
++    public PluginClassLoader(final JavaPluginLoader loader, final URL[] urls, final ClassLoader parent) {
++        super(urls, parent);
++
++        this.loader = loader;
++    }
++
++    @Override
++    public void addURL(URL url) { // Override for access level!
++        super.addURL(url);
++    }
++
++    @Override
++    protected Class<?> findClass(String name) throws ClassNotFoundException {
++        return findClass(name, true);
++    }
++
++    private void ensurePackageLoaded(String name) {
++        int i = name.lastIndexOf('.');
++        if (i != -1) {
++            String pkgname = name.substring(0, i);
++            // If not yet defined, define it
++            if (getPackage(pkgname) == null) {
++                definePackage(pkgname, null, null, null, null, null, null, null);
++            }
++        }
++    }
++
++    protected Class<?> findClass(String name, boolean checkGlobal) throws ClassNotFoundException {
++        if (name.startsWith("org.bukkit.") || name.startsWith("net.minecraft.")) {
++            throw new ClassNotFoundException(name);
++        }
++        Class<?> result = classes.get(name);
++
++        if (result == null) {
++            if (checkGlobal) {
++                result = loader.getClassByName(name);
++            }
++
++            if (result == null) {
++                try {
++                    // Ensure that the package is loaded
++                    ensurePackageLoaded(name);
++
++                    // Load the resource to the name
++                    String path = name.replace('.', '/').concat(".class");
++                    URL res = this.findResource(path);
++                    if (res != null) {
++                        InputStream stream = res.openStream();
++                        if (stream != null) {
++                            // Remap the classes
++                            byte[] data = ClassRemapper.remap(stream);
++                            // Define (create) the class using the modified byte code
++                            // The top-child class loader is used for this to prevent access violations
++                            // Set the codesource to the jar, not within the jar, for compatibility with
++                            // plugins that do new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI()))
++                            // instead of using getResourceAsStream - see https://github.com/AlmuraDev/Libigot/issues/5
++                            JarURLConnection jarURLConnection = (JarURLConnection) res.openConnection(); // parses only
++                            URL jarURL = jarURLConnection.getJarFileURL();
++                            CodeSource cs = new CodeSource(jarURL, emptySigner);
++                            result = this.defineClass(name, data, 0, data.length, cs);
++                            if (result != null) {
++                                // Resolve it - sets the class loader of the class
++                                this.resolveClass(result);
++                            }
++                        }
++                    }
++                } catch (Throwable t) {
++                    //t.printStackTrace();
++                    throw new ClassNotFoundException("Failed to remap class "+ name, t);
++            	}
++
++                if (result != null) {
++                    loader.setClass(name, result);
++                }
++            }
++
++            classes.put(name, result);
++        }
++
++        return result;
++    }
++
++    public Set<String> getClasses() {
++        return classes.keySet();
++    }
++}
+-- 
+1.8.3.msysgit.0
+

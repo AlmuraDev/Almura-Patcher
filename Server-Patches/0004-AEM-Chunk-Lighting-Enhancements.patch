@@ -1,0 +1,69 @@
+From 664eefff3cf97c71f1514a6d7b63214b7c5a6788 Mon Sep 17 00:00:00 2001
+From: Steven Downer <grinch@outlook.com>
+Date: Wed, 2 Oct 2013 01:11:02 -0500
+Subject: [PATCH] (AEM) Chunk Lighting Enhancements
+
+- Magic is being done here
+
+diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
+index 8c98f3e..be85dae 100644
+--- a/src/main/java/net/minecraft/server/Chunk.java
++++ b/src/main/java/net/minecraft/server/Chunk.java
+@@ -252,10 +252,15 @@ public class Chunk {
+         }
+ 
+         if (i1 != l) {
+-            this.world.e(i + this.x * 16, k + this.z * 16, i1, l);
++            // AEM Start
++            int realX = this.x << 4;
++            int realZ = this.z << 4;
++            this.world.e(i + this.x << 16, k + this.z << 16, i1, l);
++            int j1 = realX + i;
++            int k1 = realZ + k;
++            // AEM End
++
+             this.heightMap[k << 4 | i] = i1;
+-            int j1 = this.x * 16 + i;
+-            int k1 = this.z * 16 + k;
+             int l1;
+             int i2;
+ 
+@@ -267,7 +272,7 @@ public class Chunk {
+                         chunksection = this.sections[l1 >> 4];
+                         if (chunksection != null) {
+                             chunksection.setSkyLight(i, l1 & 15, k, 15);
+-                            this.world.p((this.x << 4) + i, l1, (this.z << 4) + k);
++                            this.world.p(j1, l1, k1); // AEM
+                         }
+                     }
+                 } else {
+@@ -275,7 +280,7 @@ public class Chunk {
+                         chunksection = this.sections[l1 >> 4];
+                         if (chunksection != null) {
+                             chunksection.setSkyLight(i, l1 & 15, k, 0);
+-                            this.world.p((this.x << 4) + i, l1, (this.z << 4) + k);
++                            this.world.p(j1, l1, k1); // AEM
+                         }
+                     }
+                 }
+@@ -304,12 +309,15 @@ public class Chunk {
+ 
+             l1 = this.heightMap[k << 4 | i];
+             i2 = l;
+-            int j2 = l1;
++            //AEM Start
++            int j2;
+ 
+             if (l1 < l) {
+-                i2 = l1;
+                 j2 = l;
++            } else {
++                j2 = l1;
+             }
++            // AEM End
+ 
+             if (l1 < this.p) {
+                 this.p = l1;
+-- 
+1.8.3.msysgit.0
+

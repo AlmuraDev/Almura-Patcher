@@ -1,0 +1,92 @@
+From 70074d1b27c858e028a5ab9d5e50e5ef9cf9193b Mon Sep 17 00:00:00 2001
+From: hcherndon <hcherndon@gmail.com>
+Date: Wed, 2 Oct 2013 23:00:00 -0700
+Subject: [PATCH] (AEM) Add Additional Methods
+
+- Adds setMaxPlayers(int): Allows the ability to dynamically change the number of online players without hacky workarounds
+- Adds setMotd(String): Allows the ability to dynamically change the motd
+  without relying on an event
+- Adds setNumPlayers(int): Sets the number of online players returned by
+  the ping list
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index 7a9502a..6f053d6 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -654,4 +654,18 @@ public final class Bukkit {
+     public static ScoreboardManager getScoreboardManager() {
+         return server.getScoreboardManager();
+     }
++
++    /**
++     * @see Server#setMaxPlayers(int)
++     */
++    public static void setMaxPlayers(int max) {
++        server.setMaxPlayers(max);
++    }
++
++    /**
++     * @see Server#setMotd(String)
++     */
++    public static void setMotd(String motd) {
++        server.setMotd(motd);
++    }
+ }
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index aa45f16..62f872b 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -709,4 +709,20 @@ public interface Server extends PluginMessageRecipient {
+      * @return the scoreboard manager or null if no worlds are loaded.
+      */
+     ScoreboardManager getScoreboardManager();
++
++    // AEM Start
++    /**
++     * Dynamically change the number of online players without Reflect Hacks.
++     *
++     * @param max
++     */
++    public void setMaxPlayers(int max);
++
++    /**
++     * Dynamically change the MOTD rather than doing it on an event
++     *
++     * @param motd
++     */
++    public void setMotd(String motd);
++    //AEM End
+ }
+diff --git a/src/main/java/org/bukkit/event/server/ServerListPingEvent.java b/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
+index d8369bc..f76d8eb 100644
+--- a/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
++++ b/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
+@@ -11,7 +11,7 @@ public class ServerListPingEvent extends ServerEvent {
+     private static final HandlerList handlers = new HandlerList();
+     private final InetAddress address;
+     private String motd;
+-    private final int numPlayers;
++    private int numPlayers; // AEM - private final -> private
+     private int maxPlayers;
+ 
+     public ServerListPingEvent(final InetAddress address, final String motd, final int numPlayers, final int maxPlayers) {
+@@ -83,4 +83,16 @@ public class ServerListPingEvent extends ServerEvent {
+     public static HandlerList getHandlerList() {
+         return handlers;
+     }
++
++    // AEM Start
++    /**
++     * Set the number of online players returned to the pinger
++     *
++     * @param numPlayers the new amount of online players
++     */
++
++    public void setNumPlayers(int numPlayers){
++        this.numPlayers = numPlayers;
++    }
++    // AEM End
+ }
+-- 
+1.8.3.msysgit.0
+

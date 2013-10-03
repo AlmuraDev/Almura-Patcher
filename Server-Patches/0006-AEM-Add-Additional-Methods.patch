@@ -1,0 +1,59 @@
+From f7d85f13574dba2956a3c9092a698b0390df2b7c Mon Sep 17 00:00:00 2001
+From: hcherndon <hcherndon@gmail.com>
+Date: Wed, 2 Oct 2013 23:01:47 -0700
+Subject: [PATCH] (AEM) Add Additional Methods
+
+- Adds setMaxPlayers(int)
+- Adds setMotd(String)
+- Adds getPlayerList()
+
+diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
+index bb13b41..036516b 100644
+--- a/src/main/java/net/minecraft/server/PlayerList.java
++++ b/src/main/java/net/minecraft/server/PlayerList.java
+@@ -1086,4 +1086,10 @@ public abstract class PlayerList {
+     public void sendMessage(ChatMessage chatmessage) {
+         this.sendMessage(chatmessage, true);
+     }
++
++    // AEM Start
++    public void setMaxPlayers(int max){
++        this.maxPlayers = max;
++    }
++    // AEM End
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index f639ff7..0ccad0b 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1157,7 +1157,7 @@ public final class CraftServer implements Server {
+     }
+ 
+     public void setWhitelist(boolean value) {
+-        playerList.hasWhitelist = value;
++        playerList.setHasWhitelist(value);
+         console.getPropertyManager().a("white-list", value);
+     }
+ 
+@@ -1401,4 +1401,18 @@ public final class CraftServer implements Server {
+     public CraftScoreboardManager getScoreboardManager() {
+         return scoreboardManager;
+     }
++
++    // AEM Start
++    public DedicatedPlayerList getPlayerList(){
++        return this.playerList;
++    }
++
++    public void setMaxPlayers(int max) {
++        ((PlayerList)playerList).setMaxPlayers(max);
++    }
++
++    public void setMotd(String motd){
++        console.setMotd(motd);
++    }
++    // AEM End
+ }
+-- 
+1.8.3.msysgit.0
+
