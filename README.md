@@ -15,7 +15,7 @@ To setup AEMSpigot so you can start programming, Run the `applyPatches.sh` scrip
 
 Compile
 -------
-To compile both API and Server just simply run the following command in the base directory: `mvn clean install`
+To compile both API and Server just simply run the following command in the base directory: `mvn`
 
 Create a Patch
 --------------
