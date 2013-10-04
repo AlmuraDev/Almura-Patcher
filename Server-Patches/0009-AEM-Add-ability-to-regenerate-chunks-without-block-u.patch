@@ -1,0 +1,40 @@
+From 4f29559d8c1d2d09cb23151951b2a8973279dc08 Mon Sep 17 00:00:00 2001
+From: Steven Downer <grinch@outlook.com>
+Date: Fri, 4 Oct 2013 15:13:09 -0500
+Subject: [PATCH] (AEM) Add ability to regenerate chunks without block updates
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index 6d22e82..c52759b 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -193,7 +193,13 @@ public class CraftWorld implements World {
+         return true;
+     }
+ 
++    // AEM Start
+     public boolean regenerateChunk(int x, int z) {
++        return regenerateChunk(x, z, true);
++    }
++
++    public boolean regenerateChunk(int x, int z, boolean refresh) {
++    // AEM End
+         unloadChunk(x, z, false, false);
+ 
+         world.chunkProviderServer.unloadQueue.remove(x, z);
+@@ -208,7 +214,11 @@ public class CraftWorld implements World {
+ 
+         chunkLoadPostProcess(chunk, x, z);
+ 
+-        refreshChunk(x, z);
++        // AEM Start
++        if (refresh) {
++            refreshChunk(x, z);
++        }
++        // AEM End
+ 
+         return chunk != null;
+     }
+-- 
+1.8.3.msysgit.0
+

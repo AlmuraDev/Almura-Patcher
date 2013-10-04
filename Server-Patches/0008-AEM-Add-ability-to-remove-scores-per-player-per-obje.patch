@@ -1,0 +1,45 @@
+From 589f4b5d2ca256d30dcd4e4e8106206fd14a10b7 Mon Sep 17 00:00:00 2001
+From: Steven Downer <grinch@outlook.com>
+Date: Fri, 4 Oct 2013 15:10:20 -0500
+Subject: [PATCH] (AEM) Add ability to remove scores per player, per objective
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScore.java b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScore.java
+index 0ffbe9b..bf9eaf4 100644
+--- a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScore.java
++++ b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScore.java
+@@ -3,6 +3,7 @@ package org.bukkit.craftbukkit.scoreboard;
+ import java.util.Map;
+ 
+ import net.minecraft.server.Scoreboard;
++import net.minecraft.server.ScoreboardObjective; // AEM
+ import net.minecraft.server.ScoreboardScore;
+ 
+ import org.bukkit.Bukkit;
+@@ -53,4 +54,23 @@ final class CraftScore implements Score {
+     public CraftScoreboard getScoreboard() {
+         return objective.getScoreboard();
+     }
++
++    // AEM Start
++    public boolean isSet() throws IllegalStateException {
++        return objective.checkState().board.getPlayerObjectives(playerName).containsKey(objective.getHandle());
++    }
++
++    public void reset() throws IllegalStateException {
++        CraftScoreboard myBoard = objective.checkState();
++        Map<ScoreboardObjective, ScoreboardScore> savedScores = myBoard.board.getPlayerObjectives(playerName);
++        if (savedScores.remove(objective.getHandle()) == null) {
++            // If they don't have a score to delete, don't delete it.
++            return;
++        }
++        myBoard.board.resetPlayerScores(playerName);
++        for (Map.Entry<ScoreboardObjective, ScoreboardScore> e : savedScores.entrySet()) {
++            myBoard.board.getPlayerScoreForObjective(playerName, e.getKey()).setScore(e.getValue().getScore());
++        }
++    }
++    // AEM End
+ }
+-- 
+1.8.3.msysgit.0
+

@@ -1,0 +1,32 @@
+From 4c0d77a3184d3843a1fcc38d3d25a92c98f869b3 Mon Sep 17 00:00:00 2001
+From: Steven Downer <grinch@outlook.com>
+Date: Fri, 4 Oct 2013 15:07:09 -0500
+Subject: [PATCH] (AEM) Add ability to regenerate chunks without block updates
+
+
+diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
+index 39c72c5..b3d2e05 100644
+--- a/src/main/java/org/bukkit/World.java
++++ b/src/main/java/org/bukkit/World.java
+@@ -260,6 +260,18 @@ public interface World extends PluginMessageRecipient, Metadatable {
+      */
+     public boolean regenerateChunk(int x, int z);
+ 
++    // AEM Start
++    /**
++     * Regenerates the {@link Chunk} at the specified coordinates and whether or not to trigger block updates
++     *
++     * @param x X-coordinate of the chunk
++     * @param z Z-coordinate of the chunk
++     * @param refresh Whether or not to trigger block updates for the chunk
++     * @return Whether the chunk was actually regenerated
++     */
++    public boolean regenerateChunk(int x, int z, boolean refresh);
++    // AEM End
++
+     /**
+      * Resends the {@link Chunk} to all clients
+      *
+-- 
+1.8.3.msysgit.0
+

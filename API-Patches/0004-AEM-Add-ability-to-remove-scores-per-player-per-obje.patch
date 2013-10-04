@@ -1,0 +1,39 @@
+From 01b8d2c99afa910f2c0d7fbfc8fd128121a6b634 Mon Sep 17 00:00:00 2001
+From: Steven Downer <grinch@outlook.com>
+Date: Fri, 4 Oct 2013 15:05:22 -0500
+Subject: [PATCH] (AEM) Add ability to remove scores per player, per objective
+
+
+diff --git a/src/main/java/org/bukkit/scoreboard/Score.java b/src/main/java/org/bukkit/scoreboard/Score.java
+index c8c34ed..cab2409 100644
+--- a/src/main/java/org/bukkit/scoreboard/Score.java
++++ b/src/main/java/org/bukkit/scoreboard/Score.java
+@@ -48,4 +48,25 @@ public interface Score {
+      *     {@link Objective#unregister() unregistered}
+      */
+     Scoreboard getScoreboard();
++
++    // AEM Start
++    /**
++     * Checks if this score is set.
++     *
++     * @return true if this score is set.
++     * @throws IllegalStateException if the associated objective has been
++     *     unregistered
++     */
++    boolean isSet() throws IllegalStateException;
++
++    /**
++     * Resets this score.
++     * <p>
++     * After calling this, Score.isSet() will return false.
++     *
++     * @throws IllegalStateException if the associated objective has been
++     *     unregistered
++     */
++    void reset() throws IllegalStateException;
++    // AEM End
+ }
+-- 
+1.8.3.msysgit.0
+
