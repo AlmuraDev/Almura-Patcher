@@ -10,7 +10,12 @@ Clone
 -----
 If you are using Git, use this command to clone the project: `git clone git@bitbucket.org:AEMNetwork/aemspigot.git`
 
-## Setup
+If you want to see the post-patch versions then visit the following repositories.
+'https://bitbucket.org/AEMNetwork/aemspigot-api/'
+'https://bitbucket.org/AEMNetwork/aemspigot-server/'
+
+Setup
+-----
 To setup AEMSpigot so you can start programming, Run the `applyPatches.sh` script provided with AEMSpigot from the base directory.
 
 Compile
