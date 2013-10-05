@@ -3,12 +3,12 @@ AEMSpigot
 
 Team
 ----
-[![Grinch](https://secure.gravatar.com/avatar/19d97d07c8797464aa8b7e2e0481da78?s=48)](https://github.com/Grinch "Grinch, Lead Developer")
-[![hcherndon](http://www.spigotmc.org/data/avatars/s/0/591.jpg?1359776614)](https://github.com/hcherndon "hcherndon, Developer")
+[![Grinch](https://secure.gravatar.com/avatar/19d97d07c8797464aa8b7e2e0481da78?s=48)](https://bitbucket.org/NinjaGrinch "Grinch, Lead Developer")
+[![hcherndon](http://www.spigotmc.org/data/avatars/s/0/591.jpg?1359776614)](https://bitbucket.org/hcherndon "hcherndon, Developer")
 
 Clone
 -----
-If you are using Git, use this command to clone the project: `git clone git://github.com/AEMNetwork/AEMSpigot.git`
+If you are using Git, use this command to clone the project: `git clone git@bitbucket.org:AEMNetwork/aemspigot.git`
 
 ## Setup
 To setup AEMSpigot so you can start programming, Run the `applyPatches.sh` script provided with AEMSpigot from the base directory.
