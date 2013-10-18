@@ -1,7 +1,7 @@
-From dd7b1ab040c730e667541c46a3d12b3cf2976e84 Mon Sep 17 00:00:00 2001
+From 3a853e34e7652c86fcb6f4febc698ad8ccf4dd86 Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Wed, 2 Oct 2013 16:58:14 -0500
-Subject: [PATCH] (AEM) Packet Spoofing
+Subject: [PATCH] (AEM) Version Spoofing
 
 - Enables the ability to spoof the protocol version
 - Enables the ability to spoof the minecraft version
@@ -12,7 +12,7 @@ Subject: [PATCH] (AEM) Packet Spoofing
   with the minecraft verison of '1.6.1'.
 
 diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
-index 358cba4..fd555f5 100644
+index 358cba4..8d7877b 100644
 --- a/src/main/java/net/minecraft/server/PendingConnection.java
 +++ b/src/main/java/net/minecraft/server/PendingConnection.java
 @@ -11,6 +11,8 @@ import java.util.List;
@@ -28,8 +28,8 @@ index 358cba4..fd555f5 100644
      private boolean j;
      private SecretKey k;
      public String hostname = ""; // CraftBukkit - add field
-+    private int protocolVersion = SpigotConfig.packetSpoof ? SpigotConfig.protocolVersion : 78; // AEM
-+    private String minecraftVersion = SpigotConfig.packetSpoof ? SpigotConfig.minecraftVersion : MinecraftServer.getServer().getVersion(); // AEM
++    private int protocolVersion = SpigotConfig.versionSpoof ? SpigotConfig.protocolVersion : 78; // AEM
++    private String minecraftVersion = SpigotConfig.versionSpoof ? SpigotConfig.minecraftVersion : MinecraftServer.getServer().getVersion(); // AEM
  
      public PendingConnection(MinecraftServer minecraftserver, org.spigotmc.netty.NettyNetworkManager networkManager) {
          this.server = minecraftserver;
@@ -54,31 +54,31 @@ index 358cba4..fd555f5 100644
                  StringBuilder builder = new StringBuilder();
                  for (Object object : list) {
 diff --git a/src/main/java/org/spigotmc/SpigotConfig.java b/src/main/java/org/spigotmc/SpigotConfig.java
-index 296c581..81d3635 100644
+index 6c0a14d..7700279 100644
 --- a/src/main/java/org/spigotmc/SpigotConfig.java
 +++ b/src/main/java/org/spigotmc/SpigotConfig.java
-@@ -290,4 +290,24 @@ public class SpigotConfig
- 
-         Bukkit.getLogger().setFilter( new LogFilter() );
+@@ -292,4 +292,24 @@ public class SpigotConfig
+         commands.put( "restart", new RestartCommand( "restart" ) );
+         WatchdogThread.doStart( timeoutTime, restartOnCrash );
      }
 +
 +    // AEM Start
 +    public static int protocolVersion;
 +    private static void protocolVersion()
 +    {
-+        protocolVersion = getInt( "settings.packet-spoof.protocol", 78 ); // TODO: Keep updated with Minecraft Protocol Version
++        protocolVersion = getInt( "settings.version-spoof.protocol", 78 ); // TODO: Keep updated with Minecraft Protocol Version
 +    }
 +
 +    public static String minecraftVersion;
 +    private static void minecraftVersion()
 +    {
-+        minecraftVersion = getString( "settings.packet-spoof.minecraft-version", MinecraftServer.getServer().getVersion() );
++        minecraftVersion = getString( "settings.version-spoof.minecraft-version", MinecraftServer.getServer().getVersion() );
 +    }
 +
-+    public static boolean packetSpoof;
-+    private static void packetSpoof()
++    public static boolean versionSpoof;
++    private static void versionSpoof()
 +    {
-+        packetSpoof = getBoolean( "settings.packet-spoof.enabled", false );
++        versionSpoof = getBoolean( "settings.version-spoof.enabled", false );
 +    }
 +    // AEM End
  }
