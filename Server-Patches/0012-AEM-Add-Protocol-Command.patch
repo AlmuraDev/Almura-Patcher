@@ -1,0 +1,66 @@
+From b1a66e1cbd597a265aee2d2b41a42c9a96c5b022 Mon Sep 17 00:00:00 2001
+From: Steven Downer <grinch@outlook.com>
+Date: Tue, 22 Oct 2013 18:06:52 -0500
+Subject: [PATCH] (AEM) Add Protocol Command
+
+- Usage: /protocol
+- Permission: bukkit.commands.protocol
+
+Signed-off-by: Steven Downer <grinch@outlook.com>
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/command/ProtocolCommand.java b/src/main/java/org/bukkit/craftbukkit/command/ProtocolCommand.java
+new file mode 100644
+index 0000000..fca700d
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/command/ProtocolCommand.java
+@@ -0,0 +1,24 @@
++package org.bukkit.craftbukkit.command;
++
++import org.bukkit.ChatColor;
++import org.bukkit.command.Command;
++import org.bukkit.command.CommandSender;
++import org.spigotmc.SpigotConfig;
++
++public class ProtocolCommand extends Command {
++
++    public ProtocolCommand(String name) {
++        super(name);
++        this.description = "Gets the current minecraft and protocol version being used.";
++        this.usageMessage = "/protocol";
++        this.setPermission("bukkit.command.protocol");
++    }
++
++    @Override
++    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
++        sender.sendMessage("This server is currently being spoofed as a " + ChatColor.GREEN +
++                "Minecraft " + SpigotConfig.minecraftVersion + ChatColor.RESET + " server, using " +
++                ChatColor.GREEN + "Protocol " + SpigotConfig.protocolVersion + ChatColor.RESET + ".");
++        return true;
++    }
++}
+diff --git a/src/main/java/org/spigotmc/SpigotConfig.java b/src/main/java/org/spigotmc/SpigotConfig.java
+index ac09ba2..afa3b03 100644
+--- a/src/main/java/org/spigotmc/SpigotConfig.java
++++ b/src/main/java/org/spigotmc/SpigotConfig.java
+@@ -20,6 +20,7 @@ import org.bukkit.Bukkit;
+ import org.bukkit.ChatColor;
+ import org.bukkit.command.Command;
+ import org.bukkit.configuration.file.YamlConfiguration;
++import org.bukkit.craftbukkit.command.ProtocolCommand;
+ import org.bukkit.craftbukkit.command.TicksPerSecondCommand;
+ 
+ public class SpigotConfig
+@@ -298,5 +299,10 @@ public class SpigotConfig
+     {
+         versionSpoof = getBoolean( "settings.version-spoof.enabled", false );
+     }
++
++    private static void protocolCommand()
++    {
++        commands.put( "protocol", new ProtocolCommand( "protocol" ) );
++    }
+     // AEM End
+ }
+-- 
+1.8.3.msysgit.0
+
