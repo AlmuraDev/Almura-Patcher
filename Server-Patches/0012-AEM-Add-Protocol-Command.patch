@@ -1,4 +1,4 @@
-From b1a66e1cbd597a265aee2d2b41a42c9a96c5b022 Mon Sep 17 00:00:00 2001
+From be1b1b0139616fd7744ff275940994ba9c76992b Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Tue, 22 Oct 2013 18:06:52 -0500
 Subject: [PATCH] (AEM) Add Protocol Command
@@ -10,10 +10,10 @@ Signed-off-by: Steven Downer <grinch@outlook.com>
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/command/ProtocolCommand.java b/src/main/java/org/bukkit/craftbukkit/command/ProtocolCommand.java
 new file mode 100644
-index 0000000..fca700d
+index 0000000..7c8dd88
 --- /dev/null
 +++ b/src/main/java/org/bukkit/craftbukkit/command/ProtocolCommand.java
-@@ -0,0 +1,24 @@
+@@ -0,0 +1,28 @@
 +package org.bukkit.craftbukkit.command;
 +
 +import org.bukkit.ChatColor;
@@ -32,9 +32,13 @@ index 0000000..fca700d
 +
 +    @Override
 +    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-+        sender.sendMessage("This server is currently being spoofed as a " + ChatColor.GREEN +
-+                "Minecraft " + SpigotConfig.minecraftVersion + ChatColor.RESET + " server, using " +
-+                ChatColor.GREEN + "Protocol " + SpigotConfig.protocolVersion + ChatColor.RESET + ".");
++        if (SpigotConfig.versionSpoof) {
++            sender.sendMessage("This server is currently being spoofed as a " + ChatColor.GREEN +
++                               "Minecraft " + SpigotConfig.minecraftVersion + ChatColor.RESET + " server, using " +
++                                ChatColor.GREEN + "Protocol " + SpigotConfig.protocolVersion + ChatColor.RESET + ".");
++        } else {
++            sender.sendMessage("This server is currently not being spoofed as another Minecraft or Protocol version.");
++        }
 +        return true;
 +    }
 +}
