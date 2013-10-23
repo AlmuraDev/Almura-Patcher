@@ -8,8 +8,7 @@ function applyPatch {
     what=${1}
     target=${2}
 
-    find ${basedir}/${what} -maxdepth 0 -empty -exec git clone https://github.com/Bukkit/${what}.git ${basedir}/${what} \;
-
+    git submodule update --init
     cd ${basedir}/${what}
     git branch -f upstream >/dev/null
     cd ${basedir}
