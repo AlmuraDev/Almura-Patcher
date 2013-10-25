@@ -1,9 +1,9 @@
-From 956ee990f5ae4074e66623a2ac59e17df98b408f Mon Sep 17 00:00:00 2001
+From 0b954bbeed8a79e4e2ecb7e721de6d64284ab04d Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Tue, 1 Oct 2013 22:50:34 -0500
 Subject: [PATCH] (AEM) Update POM.xml
 
-- Update 'maven-compiler-plugin' from 2.0.2 to 3.1
+- Update 'maven-compiler-plugin' from 2.3.2 to 3.1
 - Update 'maven-shade-plugin' from 1.4 to 2.1
 - Change 'source' and 'target' from Java 1.6 to Java 1.7
 - Added 'defaultGoal' for 'clean package'
