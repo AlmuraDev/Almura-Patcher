@@ -1,4 +1,4 @@
-From ab13a654779dfb273e23d5125420df84e1898acd Mon Sep 17 00:00:00 2001
+From 35a0f7c8c1ca2381eda653df4dd52c269230506f Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Tue, 1 Oct 2013 22:48:23 -0500
 Subject: [PATCH] (AEM) Update POM.xml
@@ -11,11 +11,11 @@ Subject: [PATCH] (AEM) Update POM.xml
 - Add 'finalName' as 'Spigot' for jar name
 - Add 'commons-lang' dependency
 - Add relocation for CraftServer for plugin compatibility checks
-- Update 'maven-compiler-plugin' from '2.0.2' to '3.1'
+- Update 'maven-compiler-plugin' from '2.3.2' to '3.1'
 - Update 'maven-shade-plugin' from '1.4' to '2.1'
 
 diff --git a/pom.xml b/pom.xml
-index 3ca28d6..c0a97ff 100644
+index cc5d9da..599120e 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -2,23 +2,15 @@
@@ -33,7 +33,7 @@ index 3ca28d6..c0a97ff 100644
 +  <groupId>net.aemservers</groupId>
    <artifactId>spigot</artifactId>
    <packaging>jar</packaging>
-   <version>1.6.4-R0.1-SNAPSHOT</version>
+   <version>1.6.4-R1.1-SNAPSHOT</version>
    <name>Spigot</name>
 -  <url>http://www.spigotmc.org</url>
  
@@ -44,7 +44,7 @@ index 3ca28d6..c0a97ff 100644
      <junit.version>4.11</junit.version>
      <minecraft.version>1.6.4</minecraft.version>
      <minecraft_version>1_6_R3</minecraft_version>
-@@ -40,7 +32,7 @@
+@@ -42,7 +34,7 @@
  
    <dependencies>
      <dependency>
@@ -53,7 +53,7 @@ index 3ca28d6..c0a97ff 100644
        <artifactId>spigot-api</artifactId>
        <version>${project.version}</version>
        <type>jar</type>
-@@ -94,6 +86,11 @@
+@@ -96,6 +88,11 @@
        <artifactId>gson</artifactId>
        <version>2.1</version>
      </dependency>
@@ -65,7 +65,7 @@ index 3ca28d6..c0a97ff 100644
      <!-- testing -->
      <dependency>
        <groupId>junit</groupId>
-@@ -131,7 +128,8 @@
+@@ -133,7 +130,8 @@
  
    <!-- This builds a completely 'ready to start' jar with all dependencies inside -->
    <build>
@@ -75,7 +75,7 @@ index 3ca28d6..c0a97ff 100644
      <plugins>
        <plugin>
          <groupId>com.lukegb.mojo</groupId>
-@@ -192,7 +190,7 @@
+@@ -194,7 +192,7 @@
        <plugin>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-shade-plugin</artifactId>
@@ -84,7 +84,7 @@ index 3ca28d6..c0a97ff 100644
          <executions>
            <execution>
              <phase>package</phase>
-@@ -203,7 +201,7 @@
+@@ -205,7 +203,7 @@
                <relocations>
                  <relocation>
                    <pattern>org.bouncycastle</pattern>
@@ -93,7 +93,7 @@ index 3ca28d6..c0a97ff 100644
                  </relocation>
                  <relocation>
                    <pattern>joptsimple</pattern>
-@@ -225,6 +223,10 @@
+@@ -227,6 +225,10 @@
                    <pattern>com.google.gson</pattern>
                    <shadedPattern>org.bukkit.craftbukkit.libs.com.google.gson</shadedPattern>
                  </relocation>
@@ -104,7 +104,7 @@ index 3ca28d6..c0a97ff 100644
                  <!-- These contain native libraries, and cannot be properly relocated
                  <relocation>
                    <pattern>org.fusesource</pattern>
-@@ -238,17 +240,25 @@
+@@ -240,17 +242,25 @@
                    <pattern>com.mysql</pattern>
                    <shadedPattern>org.bukkit.craftbukkit.libs.${project.dependencies[6].version}.com.mysql</shadedPattern>
                  </relocation>
@@ -137,21 +137,22 @@ index 3ca28d6..c0a97ff 100644
                  </relocation>
                </relocations>
              </configuration>
-@@ -258,10 +268,10 @@
+@@ -260,10 +270,11 @@
        <plugin>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-compiler-plugin</artifactId>
--        <version>2.0.2</version>
+-        <version>2.3.2</version>
 +        <version>3.1</version>
          <configuration>
 -          <source>1.6</source>
 -          <target>1.6</target>
 +          <source>1.7</source>
 +          <target>1.7</target>
-           <encoding>${project.build.sourceEncoding}</encoding>
++          <encoding>${project.build.sourceEncoding}</encoding>
          </configuration>
        </plugin>
-@@ -314,8 +324,8 @@
+       <plugin>
+@@ -315,8 +326,8 @@
              </goals>
              <configuration>
                <maps>${basedir}/target/maps.yml</maps>
