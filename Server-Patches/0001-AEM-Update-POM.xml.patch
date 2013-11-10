@@ -1,4 +1,4 @@
-From 35a0f7c8c1ca2381eda653df4dd52c269230506f Mon Sep 17 00:00:00 2001
+From 645b4b83408027fcfa31e4a12eb09861c1a70a77 Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Tue, 1 Oct 2013 22:48:23 -0500
 Subject: [PATCH] (AEM) Update POM.xml
@@ -15,7 +15,7 @@ Subject: [PATCH] (AEM) Update POM.xml
 - Update 'maven-shade-plugin' from '1.4' to '2.1'
 
 diff --git a/pom.xml b/pom.xml
-index cc5d9da..599120e 100644
+index dc0a64b..c1b0f94 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -2,23 +2,15 @@
@@ -33,7 +33,7 @@ index cc5d9da..599120e 100644
 +  <groupId>net.aemservers</groupId>
    <artifactId>spigot</artifactId>
    <packaging>jar</packaging>
-   <version>1.6.4-R1.1-SNAPSHOT</version>
+   <version>1.6.4-R2.1-SNAPSHOT</version>
    <name>Spigot</name>
 -  <url>http://www.spigotmc.org</url>
  

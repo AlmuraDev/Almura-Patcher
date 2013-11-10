@@ -1,4 +1,4 @@
-From 0b954bbeed8a79e4e2ecb7e721de6d64284ab04d Mon Sep 17 00:00:00 2001
+From f68e5f271a6972e0adba63d3975f65977df72f0f Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Tue, 1 Oct 2013 22:50:34 -0500
 Subject: [PATCH] (AEM) Update POM.xml
@@ -10,7 +10,7 @@ Subject: [PATCH] (AEM) Update POM.xml
 - Added 'finalName' for 'Spigot-API' as the jar name
 
 diff --git a/pom.xml b/pom.xml
-index a5b048e..2fc16b2 100644
+index 2617528..0cd6977 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -1,38 +1,83 @@
@@ -27,7 +27,7 @@ index a5b048e..2fc16b2 100644
 -    <groupId>org.spigotmc</groupId>
 +    <groupId>net.aemservers</groupId>
      <artifactId>spigot-api</artifactId>
-     <version>1.6.4-R1.1-SNAPSHOT</version>
+     <version>1.6.4-R2.1-SNAPSHOT</version>
      <name>Spigot-API</name>
 -    <url>http://www.spigotmc.org</url>
  
