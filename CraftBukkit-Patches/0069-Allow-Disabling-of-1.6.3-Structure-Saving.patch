@@ -1,4 +1,4 @@
-From 2b6f86d1f4c8dbf0760aa21b8800ec45560c1635 Mon Sep 17 00:00:00 2001
+From 0b44ae64dcc450c399d425f364dfc5afaf31bac2 Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Sat, 21 Sep 2013 12:33:09 +1000
 Subject: [PATCH] Allow Disabling of 1.6.3 Structure Saving

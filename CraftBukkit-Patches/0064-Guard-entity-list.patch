@@ -1,11 +1,11 @@
-From 8135544e9a1021c9223c59f5c771f3c90db56cd6 Mon Sep 17 00:00:00 2001
+From 053175af610655f582c5f47746b31aaf3770b104 Mon Sep 17 00:00:00 2001
 From: Ammar Askar <ammar@ammaraskar.com>
 Date: Sat, 3 Aug 2013 21:42:00 +0500
 Subject: [PATCH] Guard entity list
 
 
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 06759cd..cb21133 100644
+index 690f768..e3ff733 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -29,7 +29,25 @@ import org.bukkit.event.weather.ThunderChangeEvent;
@@ -43,7 +43,7 @@ index 06759cd..cb21133 100644
      protected final gnu.trove.map.hash.TLongShortHashMap chunkTickList;
      protected float growthOdds = 100;
      protected float modifiedOdds = 100;
-@@ -1285,6 +1304,7 @@ public abstract class World implements IBlockAccess {
+@@ -1286,6 +1305,7 @@ public abstract class World implements IBlockAccess {
  
          org.spigotmc.ActivationRange.activateEntities(this); // Spigot
          timings.entityTick.startTiming(); // Spigot
@@ -51,7 +51,7 @@ index 06759cd..cb21133 100644
          for (i = 0; i < this.entityList.size(); ++i) {
              entity = (Entity) this.entityList.get(i);
  
-@@ -1332,12 +1352,15 @@ public abstract class World implements IBlockAccess {
+@@ -1333,12 +1353,15 @@ public abstract class World implements IBlockAccess {
                      this.getChunkAt(j, k).b(entity);
                  }
  

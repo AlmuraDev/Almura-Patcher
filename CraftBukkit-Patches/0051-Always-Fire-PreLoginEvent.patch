@@ -1,4 +1,4 @@
-From 46830a444b35253cc0cf7aef8db462ac248b6e12 Mon Sep 17 00:00:00 2001
+From 223b54c1977c76caadd2e4a04d1895c174a7829c Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Tue, 25 Jun 2013 18:09:26 +1000
 Subject: [PATCH] Always Fire PreLoginEvent

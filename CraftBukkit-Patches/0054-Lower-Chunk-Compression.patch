@@ -1,4 +1,4 @@
-From f1b14e69ea00401277075f0c171e50d086d86520 Mon Sep 17 00:00:00 2001
+From 457eb6da5931d4ec03b349ba52888f9eb9911cb7 Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Tue, 2 Jul 2013 09:07:54 +1000
 Subject: [PATCH] Lower Chunk Compression

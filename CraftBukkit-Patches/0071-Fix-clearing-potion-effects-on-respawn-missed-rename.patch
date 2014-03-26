@@ -1,4 +1,4 @@
-From 791762ea483deeac7d58acea9e939ec7684fed24 Mon Sep 17 00:00:00 2001
+From bd96023778b764200ba57cd78a643b1ad073bee9 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 1 Oct 2013 21:10:50 -0500
 Subject: [PATCH] Fix clearing potion effects on respawn -- missed rename

@@ -1,4 +1,4 @@
-From bc3e33bd073d50d9b8decb817108ccbc0ea82bda Mon Sep 17 00:00:00 2001
+From eadd118c56d983e4a4dc2288b64c60c3fb82bb00 Mon Sep 17 00:00:00 2001
 From: Alex Ciuba <alexciuba@gmail.com>
 Date: Mon, 10 Jun 2013 16:04:38 -0400
 Subject: [PATCH] Properly Consume Bonemeal in Dispensers

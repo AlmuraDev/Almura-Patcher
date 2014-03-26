@@ -1,4 +1,4 @@
-From b056c12c50ba90a5026b4027d4e9fdfb1e33d573 Mon Sep 17 00:00:00 2001
+From b741d792d995f31c029e7156f1eade4225cb7eaf Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Thu, 25 Jul 2013 17:06:02 +1000
 Subject: [PATCH] Filter Invalid Names

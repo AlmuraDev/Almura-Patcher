@@ -1,14 +1,14 @@
-From 614b308d9320766357309fa47e992099a7d48145 Mon Sep 17 00:00:00 2001
+From 720608d3cd70533aa00cc13e1a10a77406676ee0 Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Sat, 22 Jun 2013 16:12:02 +1000
 Subject: [PATCH] Allow Disabling of Random Lighting Updates
 
 
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 51a8d58..84ee535 100644
+index ab1ac5e..e594b04 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -2103,7 +2103,7 @@ public abstract class World implements IBlockAccess {
+@@ -2104,7 +2104,7 @@ public abstract class World implements IBlockAccess {
          }
  
          this.methodProfiler.a("playerCheckLight");

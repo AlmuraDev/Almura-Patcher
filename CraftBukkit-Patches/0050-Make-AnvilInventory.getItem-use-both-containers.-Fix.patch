@@ -1,4 +1,4 @@
-From adf2d09ac8771ab8f702cacf3b01ee7528710b3d Mon Sep 17 00:00:00 2001
+From c2939ec9e2f5bd1c56ceedff9c68165efaba730f Mon Sep 17 00:00:00 2001
 From: Andre LeBlanc <andre@norcode.com>
 Date: Sat, 6 Apr 2013 12:00:31 -0400
 Subject: [PATCH] Make AnvilInventory.getItem() use both containers. Fixes
