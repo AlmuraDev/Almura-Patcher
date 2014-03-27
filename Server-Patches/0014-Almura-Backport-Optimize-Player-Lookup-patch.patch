@@ -1,0 +1,193 @@
+From f2ecc550a3d48fff041e3b25b93c9ea0797cf813 Mon Sep 17 00:00:00 2001
+From: Steven Downer <grinch@outlook.com>
+Date: Wed, 26 Mar 2014 20:29:59 -0500
+Subject: [PATCH] (Almura) Backport 'Optimize Player Lookup' patch
+
+Original patch:
+https://github.com/SpigotMC/Spigot/blob/master/CraftBukkit-Patches/0117-Optimize-Player-Lookup.patch
+
+Signed-off-by: Steven Downer <grinch@outlook.com>
+
+diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
+index 54b0280..abc482e 100644
+--- a/src/main/java/net/minecraft/server/PlayerList.java
++++ b/src/main/java/net/minecraft/server/PlayerList.java
+@@ -6,6 +6,7 @@ import java.net.SocketAddress;
+ import java.text.SimpleDateFormat;
+ import java.util.ArrayList;
+ import java.util.Collections;
++import java.util.HashMap;
+ import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.List;
+@@ -49,6 +50,21 @@ public abstract class PlayerList {
+     private boolean m;
+     private int n;
+ 
++    // Almura start
++    private final Map<String, EntityPlayer> playerMap = new HashMap<String, EntityPlayer>();
++    private void removePlayer(EntityPlayer player) {
++        playerMap.remove(player.getName().toLowerCase());
++    }
++
++    private void putPlayer(EntityPlayer player) {
++        playerMap.put(player.getName().toLowerCase(), player);
++    }
++
++    private EntityPlayer getPlayerByName(String name) {
++        return playerMap.get(name.toLowerCase());
++    }
++    // Almura end
++
+     // CraftBukkit start
+     private CraftServer cserver;
+ 
+@@ -200,6 +216,7 @@ public abstract class PlayerList {
+         cserver.detectListNameConflict(entityplayer); // CraftBukkit
+         // this.sendAll(new Packet201PlayerInfo(entityplayer.getName(), true, 1000)); // CraftBukkit - replaced with loop below
+         this.players.add(entityplayer);
++        putPlayer(entityplayer); // Almura
+         WorldServer worldserver = this.server.getWorldServer(entityplayer.dimension);
+ 
+         // CraftBukkit start
+@@ -271,6 +288,7 @@ public abstract class PlayerList {
+         worldserver.kill(entityplayer);
+         worldserver.getPlayerChunkMap().removePlayer(entityplayer);
+         this.players.remove(entityplayer);
++        removePlayer(entityplayer); // Almura
+         ChunkIOExecutor.adjustPoolSize(this.getPlayerCount()); // CraftBukkit
+ 
+         // CraftBukkit start - .name -> .listName, replace sendAll with loop
+@@ -343,24 +361,12 @@ public abstract class PlayerList {
+     }
+ 
+     public EntityPlayer processLogin(EntityPlayer player) { // CraftBukkit - String -> EntityPlayer
+-        String s = player.name; // CraftBukkit
+-        ArrayList arraylist = new ArrayList();
+-
+-        EntityPlayer entityplayer;
+-
+-        for (int i = 0; i < this.players.size(); ++i) {
+-            entityplayer = (EntityPlayer) this.players.get(i);
+-            if (entityplayer.getName().equalsIgnoreCase(s)) {
+-                arraylist.add(entityplayer);
+-            }
+-        }
+-
+-        Iterator iterator = arraylist.iterator();
+-
+-        while (iterator.hasNext()) {
+-            entityplayer = (EntityPlayer) iterator.next();
++        // Almura start
++        EntityPlayer entityplayer = getPlayer(player.getName().toLowerCase());
++        if (entityplayer != null) {
+             entityplayer.playerConnection.disconnect("You logged in from another location");
+         }
++        // Almura end
+ 
+         /* CraftBukkit start
+         Object object;
+@@ -806,19 +812,7 @@ public abstract class PlayerList {
+     }
+ 
+     public EntityPlayer getPlayer(String s) {
+-        Iterator iterator = this.players.iterator();
+-
+-        EntityPlayer entityplayer;
+-
+-        do {
+-            if (!iterator.hasNext()) {
+-                return null;
+-            }
+-
+-            entityplayer = (EntityPlayer) iterator.next();
+-        } while (!entityplayer.getName().equalsIgnoreCase(s));
+-
+-        return entityplayer;
++        return getPlayerByName(s); // Almura
+     }
+ 
+     public List a(ChunkCoordinates chunkcoordinates, int i, int j, int k, int l, int i1, int j1, Map map, String s, String s1, World world) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+index d596e69..389bcc6 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+@@ -103,14 +103,10 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+     }
+ 
+     public Player getPlayer() {
+-        for (Object obj : server.getHandle().players) {
+-            EntityPlayer player = (EntityPlayer) obj;
+-            if (player.getName().equalsIgnoreCase(getName())) {
+-                return (player.playerConnection != null) ? player.playerConnection.getPlayer() : null;
+-            }
+-        }
+-
+-        return null;
++        // Almura start
++        EntityPlayer entityPlayer = server.getHandle().getPlayer(name);
++        return (entityPlayer != null && entityPlayer.playerConnection != null) ? entityPlayer.getBukkitEntity() : null;
++        // Almura end
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index d3ef6d6..522d157 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -328,6 +328,13 @@ public final class CraftServer implements Server {
+     public Player getPlayer(final String name) {
+         Validate.notNull(name, "Name cannot be null");
+ 
++        // Almura start
++        Player directLookup = getPlayerExact(name);
++        if (directLookup != null) {
++            return directLookup;
++        }
++        // Almura end
++
+         Player[] players = getOnlinePlayers();
+ 
+         Player found = null;
+@@ -349,15 +356,10 @@ public final class CraftServer implements Server {
+     public Player getPlayerExact(String name) {
+         Validate.notNull(name, "Name cannot be null");
+ 
+-        String lname = name.toLowerCase();
+-
+-        for (Player player : getOnlinePlayers()) {
+-            if (player.getName().equalsIgnoreCase(lname)) {
+-                return player;
+-            }
+-        }
+-
+-        return null;
++        // Almura start
++        EntityPlayer entityPlayer = playerList.getPlayer(name);
++        return (entityPlayer != null) ? entityPlayer.getBukkitEntity() : null;
++        // Almura end
+     }
+ 
+     public int broadcastMessage(String message) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index ed93040..b20a2a0 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -91,13 +91,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     }
+ 
+     public boolean isOnline() {
+-        for (Object obj : server.getHandle().players) {
+-            EntityPlayer player = (EntityPlayer) obj;
+-            if (player.getName().equalsIgnoreCase(getName())) {
+-                return true;
+-            }
+-        }
+-        return false;
++        return server.getHandle().getPlayer(getName()) != null; // Almura
+     }
+ 
+     public InetSocketAddress getAddress() {
+-- 
+1.9.0.msysgit.0
+
