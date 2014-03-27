@@ -1,7 +1,9 @@
-From a141031c87738b929f71ef9dcb188f032b593844 Mon Sep 17 00:00:00 2001
+From af60932a1ba2a10293110c542e7d01cae9054fb0 Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Wed, 26 Mar 2014 20:45:18 -0500
-Subject: [PATCH] (Almura) Add BlockFlower.java
+Subject: [PATCH] (Almura) Add classes for diff visibility
+
+- Added 'BlockFlower.java'
 
 Signed-off-by: Steven Downer <grinch@outlook.com>
 
