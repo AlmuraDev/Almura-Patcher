@@ -1,12 +1,12 @@
-From 664eefff3cf97c71f1514a6d7b63214b7c5a6788 Mon Sep 17 00:00:00 2001
+From c3dc7556b8ad9d69909a8d706a426fef63d70ef0 Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Wed, 2 Oct 2013 01:11:02 -0500
-Subject: [PATCH] (AEM) Chunk Lighting Enhancements
+Subject: [PATCH] (Almura) Chunk Lighting Enhancements
 
 - Magic is being done here
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index 8c98f3e..be85dae 100644
+index 8c98f3e..2478869 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
 @@ -252,10 +252,15 @@ public class Chunk {
@@ -14,13 +14,13 @@ index 8c98f3e..be85dae 100644
  
          if (i1 != l) {
 -            this.world.e(i + this.x * 16, k + this.z * 16, i1, l);
-+            // AEM Start
++            // Almura Start
 +            int realX = this.x << 4;
 +            int realZ = this.z << 4;
 +            this.world.e(i + this.x << 16, k + this.z << 16, i1, l);
 +            int j1 = realX + i;
 +            int k1 = realZ + k;
-+            // AEM End
++            // Almura End
 +
              this.heightMap[k << 4 | i] = i1;
 -            int j1 = this.x * 16 + i;
@@ -33,7 +33,7 @@ index 8c98f3e..be85dae 100644
                          if (chunksection != null) {
                              chunksection.setSkyLight(i, l1 & 15, k, 15);
 -                            this.world.p((this.x << 4) + i, l1, (this.z << 4) + k);
-+                            this.world.p(j1, l1, k1); // AEM
++                            this.world.p(j1, l1, k1); // Almura
                          }
                      }
                  } else {
@@ -42,7 +42,7 @@ index 8c98f3e..be85dae 100644
                          if (chunksection != null) {
                              chunksection.setSkyLight(i, l1 & 15, k, 0);
 -                            this.world.p((this.x << 4) + i, l1, (this.z << 4) + k);
-+                            this.world.p(j1, l1, k1); // AEM
++                            this.world.p(j1, l1, k1); // Almura
                          }
                      }
                  }
@@ -51,7 +51,7 @@ index 8c98f3e..be85dae 100644
              l1 = this.heightMap[k << 4 | i];
              i2 = l;
 -            int j2 = l1;
-+            //AEM Start
++            // Almura Start
 +            int j2;
  
              if (l1 < l) {
@@ -60,10 +60,10 @@ index 8c98f3e..be85dae 100644
 +            } else {
 +                j2 = l1;
              }
-+            // AEM End
++            // Almura End
  
              if (l1 < this.p) {
                  this.p = l1;
 -- 
-1.8.3.msysgit.0
+1.9.0.msysgit.0
 

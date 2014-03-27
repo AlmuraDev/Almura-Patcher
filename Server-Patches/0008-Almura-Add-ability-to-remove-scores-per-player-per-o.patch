@@ -1,18 +1,32 @@
-From 589f4b5d2ca256d30dcd4e4e8106206fd14a10b7 Mon Sep 17 00:00:00 2001
+From a66a2115d0db41639f78ac5da6ec96e294a70451 Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Fri, 4 Oct 2013 15:10:20 -0500
-Subject: [PATCH] (AEM) Add ability to remove scores per player, per objective
+Subject: [PATCH] (Almura) Add ability to remove scores per player, per
+ objective
 
 
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 4ca487c..d3ef6d6 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1163,7 +1163,7 @@ public final class CraftServer implements Server {
+     }
+ 
+     public void setWhitelist(boolean value) {
+-        playerList.setHasWhitelist(value); // AEM
++        playerList.setHasWhitelist(value); // Almura
+         console.getPropertyManager().a("white-list", value);
+     }
+ 
 diff --git a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScore.java b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScore.java
-index 0ffbe9b..bf9eaf4 100644
+index 0ffbe9b..1b8f849 100644
 --- a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScore.java
 +++ b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScore.java
 @@ -3,6 +3,7 @@ package org.bukkit.craftbukkit.scoreboard;
  import java.util.Map;
  
  import net.minecraft.server.Scoreboard;
-+import net.minecraft.server.ScoreboardObjective; // AEM
++import net.minecraft.server.ScoreboardObjective; // Almura
  import net.minecraft.server.ScoreboardScore;
  
  import org.bukkit.Bukkit;
@@ -21,7 +35,7 @@ index 0ffbe9b..bf9eaf4 100644
          return objective.getScoreboard();
      }
 +
-+    // AEM Start
++    // Almura Start
 +    public boolean isSet() throws IllegalStateException {
 +        return objective.checkState().board.getPlayerObjectives(playerName).containsKey(objective.getHandle());
 +    }
@@ -38,8 +52,8 @@ index 0ffbe9b..bf9eaf4 100644
 +            myBoard.board.getPlayerScoreForObjective(playerName, e.getKey()).setScore(e.getValue().getScore());
 +        }
 +    }
-+    // AEM End
++    // Almura End
  }
 -- 
-1.8.3.msysgit.0
+1.9.0.msysgit.0
 

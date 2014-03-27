@@ -41,10 +41,10 @@ function liberatePatches {
     cd ${basedir}/${source}-Patches/
     
     for patch in *.patch; do
-        if grep -q AEM ${patch}; then
+        if grep -q Almura ${patch}; then
             num=$((num+1))
             patchNum=$(printf "%04d" $num)
-            newPatch=`echo $patch | sed "s/[0-9][0-9][0-9][0-9]-AEM/${patchNum}-AEM/g"`
+            newPatch=`echo $patch | sed "s/[0-9][0-9][0-9][0-9]-Almura/${patchNum}-Almura/g"`
             mv ${patch} ${basedir}/${destination}-Patches/${newPatch}
         fi
     done

@@ -1,7 +1,7 @@
-From ede503e02baaa01a724fbeabb30ed14c4f7d8bda Mon Sep 17 00:00:00 2001
+From 025f106332a5b28fdb435f3d4032cde77a1278b5 Mon Sep 17 00:00:00 2001
 From: hcherndon <hcherndon@gmail.com>
 Date: Wed, 2 Oct 2013 23:00:00 -0700
-Subject: [PATCH] (AEM) Add Additional Methods
+Subject: [PATCH] (Almura) Add Additional Methods
 
 - Adds setMaxPlayers(int): Allows the ability to dynamically change the number of online players without hacky workarounds
 - Adds setMotd(String): Allows the ability to dynamically change the motd
@@ -10,7 +10,7 @@ Subject: [PATCH] (AEM) Add Additional Methods
   the ping list
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 7a9502a..19ee9aa 100644
+index 7a9502a..bf0bda0 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -654,4 +654,20 @@ public final class Bukkit {
@@ -18,7 +18,7 @@ index 7a9502a..19ee9aa 100644
          return server.getScoreboardManager();
      }
 +
-+    // AEM Start
++    // Almura Start
 +    /**
 +     * @see Server#setMaxPlayers(int)
 +     */
@@ -32,10 +32,10 @@ index 7a9502a..19ee9aa 100644
 +    public static void setMotd(String motd) {
 +        server.setMotd(motd);
 +    }
-+    // AEM End
++    // Almura End
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index aa45f16..62f872b 100644
+index aa45f16..786d734 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -709,4 +709,20 @@ public interface Server extends PluginMessageRecipient {
@@ -43,7 +43,7 @@ index aa45f16..62f872b 100644
       */
      ScoreboardManager getScoreboardManager();
 +
-+    // AEM Start
++    // Almura Start
 +    /**
 +     * Dynamically change the number of online players without Reflect Hacks.
 +     *
@@ -57,10 +57,10 @@ index aa45f16..62f872b 100644
 +     * @param motd
 +     */
 +    public void setMotd(String motd);
-+    //AEM End
++    // Almura End
  }
 diff --git a/src/main/java/org/bukkit/event/server/ServerListPingEvent.java b/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
-index d8369bc..f76d8eb 100644
+index d8369bc..59557e4 100644
 --- a/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
 +++ b/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
 @@ -11,7 +11,7 @@ public class ServerListPingEvent extends ServerEvent {
@@ -68,7 +68,7 @@ index d8369bc..f76d8eb 100644
      private final InetAddress address;
      private String motd;
 -    private final int numPlayers;
-+    private int numPlayers; // AEM - private final -> private
++    private int numPlayers; // Almura - private final -> private
      private int maxPlayers;
  
      public ServerListPingEvent(final InetAddress address, final String motd, final int numPlayers, final int maxPlayers) {
@@ -77,7 +77,7 @@ index d8369bc..f76d8eb 100644
          return handlers;
      }
 +
-+    // AEM Start
++    // Almura Start
 +    /**
 +     * Set the number of online players returned to the pinger
 +     *
@@ -87,8 +87,8 @@ index d8369bc..f76d8eb 100644
 +    public void setNumPlayers(int numPlayers){
 +        this.numPlayers = numPlayers;
 +    }
-+    // AEM End
++    // Almura End
  }
 -- 
-1.8.3.msysgit.0
+1.9.0.msysgit.0
 

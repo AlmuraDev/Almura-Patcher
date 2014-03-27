@@ -1,7 +1,7 @@
-From 3a853e34e7652c86fcb6f4febc698ad8ccf4dd86 Mon Sep 17 00:00:00 2001
+From 1f2fac6b28535c89ffd76ee9a3d2efb6981b2d61 Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Wed, 2 Oct 2013 16:58:14 -0500
-Subject: [PATCH] (AEM) Version Spoofing
+Subject: [PATCH] (Almura) Version Spoofing
 
 - Enables the ability to spoof the protocol version
 - Enables the ability to spoof the minecraft version
@@ -12,14 +12,14 @@ Subject: [PATCH] (AEM) Version Spoofing
   with the minecraft verison of '1.6.1'.
 
 diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
-index 358cba4..8d7877b 100644
+index 358cba4..3bdf7d6 100644
 --- a/src/main/java/net/minecraft/server/PendingConnection.java
 +++ b/src/main/java/net/minecraft/server/PendingConnection.java
 @@ -11,6 +11,8 @@ import java.util.List;
  import java.util.Random;
  import javax.crypto.SecretKey;
  
-+import org.spigotmc.SpigotConfig; // AEM
++import org.spigotmc.SpigotConfig; // Almura
 +
  public class PendingConnection extends Connection {
  
@@ -28,8 +28,8 @@ index 358cba4..8d7877b 100644
      private boolean j;
      private SecretKey k;
      public String hostname = ""; // CraftBukkit - add field
-+    private int protocolVersion = SpigotConfig.versionSpoof ? SpigotConfig.protocolVersion : 78; // AEM
-+    private String minecraftVersion = SpigotConfig.versionSpoof ? SpigotConfig.minecraftVersion : MinecraftServer.getServer().getVersion(); // AEM
++    private int protocolVersion = SpigotConfig.versionSpoof ? SpigotConfig.protocolVersion : 78; // Almura
++    private String minecraftVersion = SpigotConfig.versionSpoof ? SpigotConfig.minecraftVersion : MinecraftServer.getServer().getVersion(); // Almura
  
      public PendingConnection(MinecraftServer minecraftserver, org.spigotmc.netty.NettyNetworkManager networkManager) {
          this.server = minecraftserver;
@@ -54,7 +54,7 @@ index 358cba4..8d7877b 100644
                  StringBuilder builder = new StringBuilder();
                  for (Object object : list) {
 diff --git a/src/main/java/org/spigotmc/SpigotConfig.java b/src/main/java/org/spigotmc/SpigotConfig.java
-index 6c0a14d..7700279 100644
+index 6c0a14d..a537434 100644
 --- a/src/main/java/org/spigotmc/SpigotConfig.java
 +++ b/src/main/java/org/spigotmc/SpigotConfig.java
 @@ -292,4 +292,24 @@ public class SpigotConfig
@@ -62,7 +62,7 @@ index 6c0a14d..7700279 100644
          WatchdogThread.doStart( timeoutTime, restartOnCrash );
      }
 +
-+    // AEM Start
++    // Almura Start
 +    public static int protocolVersion;
 +    private static void protocolVersion()
 +    {
@@ -80,8 +80,8 @@ index 6c0a14d..7700279 100644
 +    {
 +        versionSpoof = getBoolean( "settings.version-spoof.enabled", false );
 +    }
-+    // AEM End
++    // Almura End
  }
 -- 
-1.8.3.msysgit.0
+1.9.0.msysgit.0
 

@@ -1,7 +1,7 @@
-From 3ea68024233c0ca280a3599ca7088501293111c8 Mon Sep 17 00:00:00 2001
+From e249b7ae35f3311458ddac122cdef148200d3dc0 Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Tue, 8 Oct 2013 06:26:48 -0500
-Subject: [PATCH] (AEM) Remove Metrics
+Subject: [PATCH] (Almura) Remove Metrics
 
 
 diff --git a/src/main/java/org/spigotmc/Metrics.java b/src/main/java/org/spigotmc/Metrics.java
@@ -657,7 +657,7 @@ index f1690a2..0000000
 -}
 \ No newline at end of file
 diff --git a/src/main/java/org/spigotmc/SpigotConfig.java b/src/main/java/org/spigotmc/SpigotConfig.java
-index 81d3635..1f1a61f 100644
+index a537434..fe103af 100644
 --- a/src/main/java/org/spigotmc/SpigotConfig.java
 +++ b/src/main/java/org/spigotmc/SpigotConfig.java
 @@ -42,7 +42,6 @@ public class SpigotConfig
@@ -688,5 +688,5 @@ index 81d3635..1f1a61f 100644
  
      static void readConfig(Class<?> clazz, Object instance)
 -- 
-1.8.3.msysgit.0
+1.9.0.msysgit.0
 

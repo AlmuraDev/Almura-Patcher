@@ -3,12 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.aemservers</groupId>
-    <artifactId>spigot</artifactId>
+    <groupId>com.almuradev</groupId>
+    <artifactId>almura</artifactId>
     <version>dev-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>AEMSpigot</name>
+    <name>Almura</name>
     <description>Parent project for our API and Server</description>
 
     <modules>

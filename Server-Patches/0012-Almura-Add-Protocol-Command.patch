@@ -1,7 +1,7 @@
-From be1b1b0139616fd7744ff275940994ba9c76992b Mon Sep 17 00:00:00 2001
+From e3a93bc8458e87c344e6872b09e12bec20e44242 Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Tue, 22 Oct 2013 18:06:52 -0500
-Subject: [PATCH] (AEM) Add Protocol Command
+Subject: [PATCH] (Almura) Add Protocol Command
 
 - Usage: /protocol
 - Permission: bukkit.commands.protocol
@@ -43,7 +43,7 @@ index 0000000..7c8dd88
 +    }
 +}
 diff --git a/src/main/java/org/spigotmc/SpigotConfig.java b/src/main/java/org/spigotmc/SpigotConfig.java
-index ac09ba2..afa3b03 100644
+index fe103af..a13d294 100644
 --- a/src/main/java/org/spigotmc/SpigotConfig.java
 +++ b/src/main/java/org/spigotmc/SpigotConfig.java
 @@ -20,6 +20,7 @@ import org.bukkit.Bukkit;
@@ -63,8 +63,8 @@ index ac09ba2..afa3b03 100644
 +    {
 +        commands.put( "protocol", new ProtocolCommand( "protocol" ) );
 +    }
-     // AEM End
+     // Almura End
  }
 -- 
-1.8.3.msysgit.0
+1.9.0.msysgit.0
 

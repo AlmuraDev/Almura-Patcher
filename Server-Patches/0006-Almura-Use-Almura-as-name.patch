@@ -1,0 +1,68 @@
+From ed51fa42dad9f3255887fc2026e561102bc23b29 Mon Sep 17 00:00:00 2001
+From: hcherndon <hcherndon@gmail.com>
+Date: Wed, 2 Oct 2013 23:59:27 -0500
+Subject: [PATCH] (Almura) Use Almura as name
+
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index fb8bc87..b79018b 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -785,7 +785,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
+         org.bukkit.plugin.Plugin[] plugins = server.getPluginManager().getPlugins();
+ 
+         result.append(server.getName());
+-        result.append(" on Bukkit ");
++        result.append(" on Almura "); // Almura - Use our name
+         result.append(server.getBukkitVersion());
+ 
+         if (plugins.length > 0 && this.server.getQueryPlugins()) {
+@@ -915,7 +915,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
+     }
+ 
+     public String getName() {
+-        return "Server";
++        return "Almura"; // Almura - Use our name
+     }
+ 
+     public void sendMessage(ChatMessage chatmessage) {
+diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
+index 3bdf7d6..0eaa6ff 100644
+--- a/src/main/java/net/minecraft/server/PendingConnection.java
++++ b/src/main/java/net/minecraft/server/PendingConnection.java
+@@ -82,8 +82,8 @@ public class PendingConnection extends Connection {
+             } else {
+                 PublicKey publickey = this.server.H().getPublic();
+ 
+-                if (packet2handshake.d() != protocolVersion) { // AEM
+-                    if (packet2handshake.d() > protocolVersion) { // AEM
++                if (packet2handshake.d() != protocolVersion) { // Almura
++                    if (packet2handshake.d() > protocolVersion) { // Almura
+                         this.disconnect(org.spigotmc.SpigotConfig.outdatedServerMessage); // Spigot
+                     } else {
+                         this.disconnect(org.spigotmc.SpigotConfig.outdatedClientMessage); // Spigot
+@@ -163,7 +163,7 @@ public class PendingConnection extends Connection {
+                 s = pingEvent.getMotd() + "\u00A7" + playerlist.getPlayerCount() + "\u00A7" + pingEvent.getMaxPlayers();
+             } else {
+                 // CraftBukkit start - Don't create a list from an array
+-                Object[] list = new Object[] { 1, protocolVersion, minecraftVersion, pingEvent.getMotd(), playerlist.getPlayerCount(), pingEvent.getMaxPlayers() }; // AEM
++                Object[] list = new Object[] { 1, protocolVersion, minecraftVersion, pingEvent.getMotd(), playerlist.getPlayerCount(), pingEvent.getMaxPlayers() }; // Almura
+ 
+                 StringBuilder builder = new StringBuilder();
+                 for (Object object : list) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 8da6a6d..7eea532 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -135,7 +135,7 @@ import com.google.common.collect.MapMaker;
+ import jline.console.ConsoleReader;
+ 
+ public final class CraftServer implements Server {
+-    private final String serverName = "CraftBukkit";
++    private final String serverName = "Almura"; // Almura - Use our name
+     private final String serverVersion;
+     private final String bukkitVersion = Versioning.getBukkitVersion();
+     private final ServicesManager servicesManager = new SimpleServicesManager();
+-- 
+1.9.0.msysgit.0
+

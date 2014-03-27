@@ -38,4 +38,4 @@ function applyPatch {
     fi
 }
 
-applyPatch Bukkit API && applyPatch CraftBukkit Server
+applyPatch CraftBukkit Server

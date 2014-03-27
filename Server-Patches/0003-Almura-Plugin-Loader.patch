@@ -1,12 +1,12 @@
-From 47248406a54d5ef61942cd6d5294a9e35437e596 Mon Sep 17 00:00:00 2001
+From 553409434731d4a00ce7146538d1c8bb33388d5c Mon Sep 17 00:00:00 2001
 From: Chris Sanders <zidane@outlook.com>
 Date: Fri, 21 Dec 2012 22:08:09 -0600
-Subject: [PATCH] (AEM) Plugin Loader
+Subject: [PATCH] (Almura) Plugin Loader
 
 - Compatible with Java 1.7 Update 25 or above
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 404a626..f639ff7 100644
+index 3629959..8da6a6d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -144,7 +144,7 @@ public final class CraftServer implements Server {
@@ -14,24 +14,24 @@ index 404a626..f639ff7 100644
      private final StandardMessenger messenger = new StandardMessenger();
      private final PluginManager pluginManager = new SimplePluginManager(this, commandMap);
 -    protected final MinecraftServer console;
-+    public final MinecraftServer console; // AEM protected -> public
++    public final MinecraftServer console; // Almura protected -> public
      protected final DedicatedPlayerList playerList;
      private final Map<String, World> worlds = new LinkedHashMap<String, World>();
      private YamlConfiguration configuration;
-diff --git a/src/main/java/org/bukkit/plugin/java/AEMMethodVisitor.java b/src/main/java/org/bukkit/plugin/java/AEMMethodVisitor.java
+diff --git a/src/main/java/org/bukkit/plugin/java/AlmuraMethodVisitor.java b/src/main/java/org/bukkit/plugin/java/AlmuraMethodVisitor.java
 new file mode 100644
-index 0000000..6298117
+index 0000000..e691055
 --- /dev/null
-+++ b/src/main/java/org/bukkit/plugin/java/AEMMethodVisitor.java
++++ b/src/main/java/org/bukkit/plugin/java/AlmuraMethodVisitor.java
 @@ -0,0 +1,20 @@
 +package org.bukkit.plugin.java;
 +
 +import org.objectweb.asm.MethodVisitor;
 +import org.objectweb.asm.Opcodes;
 +
-+public class AEMMethodVisitor extends MethodVisitor {
++public class AlmuraMethodVisitor extends MethodVisitor {
 +
-+    public AEMMethodVisitor(MethodVisitor parent) {
++    public AlmuraMethodVisitor(MethodVisitor parent) {
 +        super(Opcodes.ASM4, parent);
 +    }
 +
@@ -44,11 +44,11 @@ index 0000000..6298117
 +        super.visitMethodInsn(opcode, owner, name, desc);
 +    }
 +}
-diff --git a/src/main/java/org/bukkit/plugin/java/AEMRemappingClassAdapter.java b/src/main/java/org/bukkit/plugin/java/AEMRemappingClassAdapter.java
+diff --git a/src/main/java/org/bukkit/plugin/java/AlmuraRemappingClassAdapter.java b/src/main/java/org/bukkit/plugin/java/AlmuraRemappingClassAdapter.java
 new file mode 100644
-index 0000000..e9753a9
+index 0000000..1bf86c2
 --- /dev/null
-+++ b/src/main/java/org/bukkit/plugin/java/AEMRemappingClassAdapter.java
++++ b/src/main/java/org/bukkit/plugin/java/AlmuraRemappingClassAdapter.java
 @@ -0,0 +1,19 @@
 +package org.bukkit.plugin.java;
 +
@@ -57,21 +57,21 @@ index 0000000..e9753a9
 +import org.objectweb.asm.commons.Remapper;
 +import org.objectweb.asm.commons.RemappingClassAdapter;
 +
-+public class AEMRemappingClassAdapter extends RemappingClassAdapter {
++public class AlmuraRemappingClassAdapter extends RemappingClassAdapter {
 +
-+    public AEMRemappingClassAdapter(ClassVisitor visitor, Remapper remapper) {
++    public AlmuraRemappingClassAdapter(ClassVisitor visitor, Remapper remapper) {
 +        super(visitor, remapper);
 +    }
 +
 +    @Override
 +    protected MethodVisitor createRemappingMethodAdapter(int arg0, String arg1,
 +            MethodVisitor parent) {
-+        return super.createRemappingMethodAdapter(arg0, arg1, new AEMMethodVisitor(parent));
++        return super.createRemappingMethodAdapter(arg0, arg1, new AlmuraMethodVisitor(parent));
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/plugin/java/ClassRemapper.java b/src/main/java/org/bukkit/plugin/java/ClassRemapper.java
 new file mode 100644
-index 0000000..2b6e510
+index 0000000..e79845a
 --- /dev/null
 +++ b/src/main/java/org/bukkit/plugin/java/ClassRemapper.java
 @@ -0,0 +1,87 @@
@@ -142,7 +142,7 @@ index 0000000..2b6e510
 +    public static byte[] remap(InputStream stream) throws IOException {
 +        ClassReader classReader = new ClassReader(stream);
 +        ClassWriter classWriter = new ClassWriter(classReader, 0);
-+        classReader.accept(new AEMRemappingClassAdapter(classWriter, instance), ClassReader.EXPAND_FRAMES);
++        classReader.accept(new AlmuraRemappingClassAdapter(classWriter, instance), ClassReader.EXPAND_FRAMES);
 +        return classWriter.toByteArray();
 +    }
 +
@@ -275,5 +275,5 @@ index 0000000..0996fc1
 +    }
 +}
 -- 
-1.8.3.msysgit.0
+1.9.0.msysgit.0
 

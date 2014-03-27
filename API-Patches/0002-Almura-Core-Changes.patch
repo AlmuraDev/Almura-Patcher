@@ -1,7 +1,7 @@
-From cf16a197bce40f19254b9883c119f672d5e9568b Mon Sep 17 00:00:00 2001
+From fd4f205e5986b6f1711a56f18b30bc3b29092f25 Mon Sep 17 00:00:00 2001
 From: Chris Sanders <zidane@outlook.com>
 Date: Sat, 22 Dec 2012 01:10:05 -0600
-Subject: [PATCH] (AEM) Core Changes
+Subject: [PATCH] (Almura) Core Changes
 
 - Reverts commit 203de4180b40f069d2c175d763476bd4ce338c76.
 - Exposes server to PluginLoader
@@ -393,5 +393,5 @@ index 29ec3fc..3e26e75 100644
      }
  }
 -- 
-1.8.3.msysgit.0
+1.9.0.msysgit.0
 

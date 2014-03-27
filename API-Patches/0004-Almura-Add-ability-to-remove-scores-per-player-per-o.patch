@@ -1,11 +1,12 @@
-From 01b8d2c99afa910f2c0d7fbfc8fd128121a6b634 Mon Sep 17 00:00:00 2001
+From c3ecc8adde59ba49002a35770989254bd05c910a Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Fri, 4 Oct 2013 15:05:22 -0500
-Subject: [PATCH] (AEM) Add ability to remove scores per player, per objective
+Subject: [PATCH] (Almura) Add ability to remove scores per player, per
+ objective
 
 
 diff --git a/src/main/java/org/bukkit/scoreboard/Score.java b/src/main/java/org/bukkit/scoreboard/Score.java
-index c8c34ed..cab2409 100644
+index c8c34ed..4785d18 100644
 --- a/src/main/java/org/bukkit/scoreboard/Score.java
 +++ b/src/main/java/org/bukkit/scoreboard/Score.java
 @@ -48,4 +48,25 @@ public interface Score {
@@ -13,7 +14,7 @@ index c8c34ed..cab2409 100644
       */
      Scoreboard getScoreboard();
 +
-+    // AEM Start
++    // Almura Start
 +    /**
 +     * Checks if this score is set.
 +     *
@@ -32,8 +33,8 @@ index c8c34ed..cab2409 100644
 +     *     unregistered
 +     */
 +    void reset() throws IllegalStateException;
-+    // AEM End
++    // Almura End
  }
 -- 
-1.8.3.msysgit.0
+1.9.0.msysgit.0
 

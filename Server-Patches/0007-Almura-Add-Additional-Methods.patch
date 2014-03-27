@@ -1,29 +1,29 @@
-From 87904e8b36e97930e8d3cea885951e4aee57beb9 Mon Sep 17 00:00:00 2001
+From 0a06b9082c88ad7b5f992fdcec4851e2889b0f05 Mon Sep 17 00:00:00 2001
 From: hcherndon <hcherndon@gmail.com>
 Date: Wed, 2 Oct 2013 23:01:47 -0700
-Subject: [PATCH] (AEM) Add Additional Methods
+Subject: [PATCH] (Almura) Add Additional Methods
 
 - Adds setMaxPlayers(int)
 - Adds setMotd(String)
 - Adds getPlayerList()
 
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index bb13b41..036516b 100644
+index 65efa35..54b0280 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -1086,4 +1086,10 @@ public abstract class PlayerList {
+@@ -1067,4 +1067,10 @@ public abstract class PlayerList {
      public void sendMessage(ChatMessage chatmessage) {
          this.sendMessage(chatmessage, true);
      }
 +
-+    // AEM Start
++    // Almura Start
 +    public void setMaxPlayers(int max){
 +        this.maxPlayers = max;
 +    }
-+    // AEM End
++    // Almura End
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 14d4f5a..b052a12 100644
+index 7eea532..4ca487c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1163,7 +1163,7 @@ public final class CraftServer implements Server {
@@ -40,7 +40,7 @@ index 14d4f5a..b052a12 100644
          getLogger().log(Level.WARNING, "A manual (plugin-induced) save has been detected while server is configured to auto-save. This may affect performance.", warningState == WarningState.ON ? new Throwable() : null);
      }
 +
-+    // AEM Start
++    // Almura Start
 +    public DedicatedPlayerList getPlayerList(){
 +        return this.playerList;
 +    }
@@ -52,8 +52,8 @@ index 14d4f5a..b052a12 100644
 +    public void setMotd(String motd){
 +        console.setMotd(motd);
 +    }
-+    // AEM End
++    // Almura End
  }
 -- 
-1.8.3.msysgit.0
+1.9.0.msysgit.0
 

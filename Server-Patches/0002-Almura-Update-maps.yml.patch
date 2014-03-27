@@ -1,7 +1,7 @@
-From 679ef61f80da06a7004d117d57b5b4597c407a3d Mon Sep 17 00:00:00 2001
+From ce7b963f6ceacdd6de14912f544a4eaad8cd1aad Mon Sep 17 00:00:00 2001
 From: Steven Downer <grinch@outlook.com>
 Date: Wed, 2 Oct 2013 00:30:58 -0500
-Subject: [PATCH] (AEM) Update maps.yml
+Subject: [PATCH] (Almura) Update maps.yml
 
 - Changes paths to match the lack of a version
 
@@ -46,5 +46,5 @@ index 2c560f7..4c10827 100644
 +  "org/bukkit/craftbukkit/entity/CraftMinecart setDamage (I)V": 0x1001
 +  "org/bukkit/craftbukkit/entity/CraftMinecart getDamage ()I": 0x1001
 -- 
-1.8.3.msysgit.0
+1.9.0.msysgit.0
 
