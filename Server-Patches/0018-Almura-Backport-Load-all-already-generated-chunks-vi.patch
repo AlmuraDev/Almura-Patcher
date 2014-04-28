@@ -1,0 +1,205 @@
+From 2908152bec9c3069476c43e4e303eeeffec22a93 Mon Sep 17 00:00:00 2001
+From: Steven Downer <grinch@outlook.com>
+Date: Sat, 1 Feb 2014 17:42:43 -0600
+Subject: [PATCH] (Almura) Backport 'Load all already generated chunks via
+ async chunk system' commit
+
+Original commit: b8fc6ab2c12e9b4c8d7b5370e44f23cc838014b2
+
+Signed-off-by: Steven Downer <grinch@outlook.com>
+
+diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
+index eda1cc3..c8ffb1a 100644
+--- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
++++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
+@@ -11,6 +11,7 @@ import java.util.Set;
+ import java.util.Random;
+ 
+ import org.bukkit.Server;
++import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
+ import org.bukkit.craftbukkit.util.LongHash;
+ import org.bukkit.craftbukkit.util.LongHashSet;
+ import org.bukkit.craftbukkit.util.LongObjectHashMap;
+@@ -86,20 +87,37 @@ public class ChunkProviderServer implements IChunkProvider {
+ 
+     public Chunk getChunkAt(int i, int j, Runnable runnable) {
+         this.unloadQueue.remove(i, j);
+-        Chunk chunk = (Chunk) this.chunks.get(LongHash.toLong(i, j));
+-        boolean newChunk = false;
++        Chunk chunk = this.chunks.get(LongHash.toLong(i, j));
+         ChunkRegionLoader loader = null;
+ 
+         if (this.e instanceof ChunkRegionLoader) {
+             loader = (ChunkRegionLoader) this.e;
+         }
+ 
+-        // If the chunk exists but isn't loaded do it async
+-        if (chunk == null && runnable != null && loader != null && loader.chunkExists(this.world, i, j)) {
+-            org.bukkit.craftbukkit.chunkio.ChunkIOExecutor.queueChunkLoad(this.world, loader, this, i, j, runnable);
+-            return null;
++        // We can only use the queue for already generated chunks
++        if (chunk == null && loader != null && loader.chunkExists(this.world, i, j)) {
++            if (runnable != null) {
++                ChunkIOExecutor.queueChunkLoad(this.world, loader, this, i, j, runnable);
++                return null;
++            } else {
++                chunk = ChunkIOExecutor.syncChunkLoad(this.world, loader, this, i, j);
++            }
++        } else if (chunk == null) {
++            chunk = this.originalGetChunkAt(i, j);
+         }
+-        // CraftBukkit end
++
++        // If we didn't load the chunk async and have a callback run it now
++        if (runnable != null) {
++            runnable.run();
++        }
++
++        return chunk;
++    }
++
++    public Chunk originalGetChunkAt(int i, int j) {
++        this.unloadQueue.remove(i, j);
++        Chunk chunk = (Chunk) this.chunks.get(LongHash.toLong(i, j));
++        boolean newChunk = false;
+ 
+         if (chunk == null) {
+             org.bukkit.craftbukkit.SpigotTimings.syncChunkLoadTimer.startTiming(); // Spigot
+@@ -144,12 +162,6 @@ public class ChunkProviderServer implements IChunkProvider {
+             org.bukkit.craftbukkit.SpigotTimings.syncChunkLoadTimer.stopTiming(); // Spigot
+         }
+ 
+-        // CraftBukkit start - If we didn't need to load the chunk run the callback now
+-        if (runnable != null) {
+-            runnable.run();
+-        }
+-        // CraftBukkit end
+-
+         return chunk;
+     }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java b/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java
+index 92fbc4f..afcf764 100644
+--- a/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java
++++ b/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java
+@@ -5,7 +5,6 @@ import net.minecraft.server.ChunkProviderServer;
+ import net.minecraft.server.ChunkRegionLoader;
+ import net.minecraft.server.World;
+ import org.bukkit.craftbukkit.util.AsynchronousExecutor;
+-import org.bukkit.craftbukkit.util.LongHash;
+ 
+ public class ChunkIOExecutor {
+     static final int BASE_THREADS = 1;
+@@ -13,12 +12,12 @@ public class ChunkIOExecutor {
+ 
+     private static final AsynchronousExecutor<QueuedChunk, Chunk, Runnable, RuntimeException> instance = new AsynchronousExecutor<QueuedChunk, Chunk, Runnable, RuntimeException>(new ChunkIOProvider(), BASE_THREADS);
+ 
+-    public static void waitForChunkLoad(World world, int x, int z) {
+-        instance.get(new QueuedChunk(LongHash.toLong(x, z), null, world, null));
++    public static Chunk syncChunkLoad(World world, ChunkRegionLoader loader, ChunkProviderServer provider, int x, int z) {
++        return instance.getSkipQueue(new QueuedChunk(x, z, loader, world, provider));
+     }
+ 
+     public static void queueChunkLoad(World world, ChunkRegionLoader loader, ChunkProviderServer provider, int x, int z, Runnable runnable) {
+-        instance.add(new QueuedChunk(LongHash.toLong(x, z), loader, world, provider), runnable);
++        instance.add(new QueuedChunk(x, z, loader, world, provider), runnable);
+     }
+ 
+     public static void adjustPoolSize(int players) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java b/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java
+index c896ba2..1495b9c 100644
+--- a/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java
++++ b/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java
+@@ -16,7 +16,7 @@ class ChunkIOProvider implements AsynchronousExecutor.CallBackProvider<QueuedChu
+     // async stuff
+     public Chunk callStage1(QueuedChunk queuedChunk) throws RuntimeException {
+         ChunkRegionLoader loader = queuedChunk.loader;
+-        Object[] data = loader.loadChunk(queuedChunk.world, LongHash.msw(queuedChunk.coords), LongHash.lsw(queuedChunk.coords));
++        Object[] data = loader.loadChunk(queuedChunk.world, queuedChunk.x, queuedChunk.z);
+ 
+         if (data != null) {
+             queuedChunk.compound = (NBTTagCompound) data[1];
+@@ -30,27 +30,17 @@ class ChunkIOProvider implements AsynchronousExecutor.CallBackProvider<QueuedChu
+     public void callStage2(QueuedChunk queuedChunk, Chunk chunk) throws RuntimeException {
+         if(chunk == null) {
+             // If the chunk loading failed just do it synchronously (may generate)
+-            queuedChunk.provider.getChunkAt(LongHash.msw(queuedChunk.coords), LongHash.lsw(queuedChunk.coords));
+-            return;
+-        }
+-
+-        int x = LongHash.msw(queuedChunk.coords);
+-        int z = LongHash.lsw(queuedChunk.coords);
+-
+-        // See if someone already loaded this chunk while we were working on it (API, etc)
+-        if (queuedChunk.provider.chunks.containsKey(queuedChunk.coords)) {
+-            // Make sure it isn't queued for unload, we need it
+-            queuedChunk.provider.unloadQueue.remove(queuedChunk.coords);
++            queuedChunk.provider.originalGetChunkAt(queuedChunk.x, queuedChunk.z);
+             return;
+         }
+ 
+         queuedChunk.loader.loadEntities(chunk, queuedChunk.compound.getCompound("Level"), queuedChunk.world);
+         chunk.n = queuedChunk.provider.world.getTime();
+-        queuedChunk.provider.chunks.put(queuedChunk.coords, chunk);
++        queuedChunk.provider.chunks.put(LongHash.toLong(queuedChunk.x, queuedChunk.z), chunk);
+         chunk.addEntities();
+ 
+         if (queuedChunk.provider.chunkProvider != null) {
+-            queuedChunk.provider.chunkProvider.recreateStructures(x, z);
++            queuedChunk.provider.chunkProvider.recreateStructures(queuedChunk.x, queuedChunk.z);
+         }
+ 
+         Server server = queuedChunk.provider.world.getServer();
+@@ -58,7 +48,7 @@ class ChunkIOProvider implements AsynchronousExecutor.CallBackProvider<QueuedChu
+             server.getPluginManager().callEvent(new org.bukkit.event.world.ChunkLoadEvent(chunk.bukkitChunk, false));
+         }
+ 
+-        chunk.a(queuedChunk.provider, queuedChunk.provider, x, z);
++        chunk.a(queuedChunk.provider, queuedChunk.provider, queuedChunk.x, queuedChunk.z);
+     }
+ 
+     public void callStage3(QueuedChunk queuedChunk, Chunk chunk, Runnable runnable) throws RuntimeException {
+diff --git a/src/main/java/org/bukkit/craftbukkit/chunkio/QueuedChunk.java b/src/main/java/org/bukkit/craftbukkit/chunkio/QueuedChunk.java
+index 77f5661..842d424 100644
+--- a/src/main/java/org/bukkit/craftbukkit/chunkio/QueuedChunk.java
++++ b/src/main/java/org/bukkit/craftbukkit/chunkio/QueuedChunk.java
+@@ -6,14 +6,16 @@ import net.minecraft.server.NBTTagCompound;
+ import net.minecraft.server.World;
+ 
+ class QueuedChunk {
+-    final long coords;
++    final int x;
++    final int z;
+     final ChunkRegionLoader loader;
+     final World world;
+     final ChunkProviderServer provider;
+     NBTTagCompound compound;
+ 
+-    public QueuedChunk(long coords, ChunkRegionLoader loader, World world, ChunkProviderServer provider) {
+-        this.coords = coords;
++    public QueuedChunk(int x, int z, ChunkRegionLoader loader, World world, ChunkProviderServer provider) {
++        this.x = x;
++        this.z = z;
+         this.loader = loader;
+         this.world = world;
+         this.provider = provider;
+@@ -21,14 +23,14 @@ class QueuedChunk {
+ 
+     @Override
+     public int hashCode() {
+-        return (int) coords ^ world.hashCode();
++        return (x * 31 + z * 29) ^ world.hashCode();
+     }
+ 
+     @Override
+     public boolean equals(Object object) {
+         if (object instanceof QueuedChunk) {
+             QueuedChunk other = (QueuedChunk) object;
+-            return coords == other.coords && world == other.world;
++            return x == other.x && z == other.z && world == other.world;
+         }
+ 
+         return false;
+-- 
+1.9.0.msysgit.0
+

@@ -1,0 +1,130 @@
+From ff73d1046b6eda35117411a237b4cd534d9ef8af Mon Sep 17 00:00:00 2001
+From: Steven Downer <grinch@outlook.com>
+Date: Sun, 27 Apr 2014 21:49:54 -0500
+Subject: [PATCH] (Almura) Backport 'Remove chunks from queue if we don't need
+ them anymore' commit
+
+Original commit: 85f5776df2a9c827565e799f150ae8a197086a98
+
+Signed-off-by: Steven Downer <grinch@outlook.com>
+
+diff --git a/src/main/java/net/minecraft/server/PlayerChunk.java b/src/main/java/net/minecraft/server/PlayerChunk.java
+index 9008315..703a485 100644
+--- a/src/main/java/net/minecraft/server/PlayerChunk.java
++++ b/src/main/java/net/minecraft/server/PlayerChunk.java
+@@ -3,6 +3,11 @@ package net.minecraft.server;
+ import java.util.ArrayList;
+ import java.util.List;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
++import java.util.HashMap;
++// CraftBukkit end
++
+ class PlayerChunk {
+ 
+     private final List b;
+@@ -11,22 +16,23 @@ class PlayerChunk {
+     private int dirtyCount;
+     private int f;
+     private long g;
+-    private boolean loaded = false; // CraftBukkit
+-
+     final PlayerChunkMap playerChunkMap;
++    // CraftBukkit start
++    private final HashMap<EntityPlayer, Runnable> players = new HashMap<EntityPlayer, Runnable>();
++    private boolean loaded = false;
++    private Runnable loadedRunnable = new Runnable() {
++        public void run() {
++            PlayerChunk.this.loaded = true;
++        }
++    };
++    // CraftBukkit end
+ 
+     public PlayerChunk(PlayerChunkMap playerchunkmap, int i, int j) {
+         this.playerChunkMap = playerchunkmap;
+         this.b = new ArrayList();
+         this.dirtyBlocks = new short[64];
+         this.location = new ChunkCoordIntPair(i, j);
+-        // CraftBukkit start
+-        playerchunkmap.a().chunkProviderServer.getChunkAt(i, j, new Runnable() {
+-            public void run() {
+-                PlayerChunk.this.loaded = true;
+-            }
+-        });
+-        // CraftBukkit end
++        playerchunkmap.a().chunkProviderServer.getChunkAt(i, j, this.loadedRunnable); // CraftBukkit
+     }
+ 
+     public void a(final EntityPlayer entityplayer) { // CraftBukkit - added final to argument
+@@ -40,25 +46,48 @@ class PlayerChunk {
+             this.b.add(entityplayer);
+ 
+             // CraftBukkit start
++            Runnable playerRunnable;
+             if (this.loaded) {
++                playerRunnable = null;
+                 entityplayer.chunkCoordIntPairQueue.add(this.location);
+             } else {
+                 // Abuse getChunkAt to add another callback
+-                this.playerChunkMap.a().chunkProviderServer.getChunkAt(this.location.x, this.location.z, new Runnable() {
++                playerRunnable = new Runnable() {
+                     public void run() {
+                         entityplayer.chunkCoordIntPairQueue.add(PlayerChunk.this.location);
+                     }
+-                });
++                };
++                this.playerChunkMap.a().chunkProviderServer.getChunkAt(this.location.x, this.location.z, playerRunnable);
+             }
++
++            this.players.put(entityplayer, playerRunnable);
+             // CraftBukkit end
+         }
+     }
+ 
+     public void b(EntityPlayer entityplayer) {
+         if (this.b.contains(entityplayer)) {
++            // CraftBukkit start - If we haven't loaded yet don't load the chunk just so we can clean it up
++            if (!this.loaded) {
++                ChunkIOExecutor.dropQueuedChunkLoad(this.playerChunkMap.a(), this.location.x, this.location.z, this.players.get(entityplayer));
++                this.b.remove(entityplayer);
++                this.players.remove(entityplayer);
++
++                if (this.b.isEmpty()) {
++                    ChunkIOExecutor.dropQueuedChunkLoad(this.playerChunkMap.a(), this.location.x, this.location.z, this.loadedRunnable);
++                    long i = (long) this.location.x + 2147483647L | (long) this.location.z + 2147483647L << 32;
++                    PlayerChunkMap.b(this.playerChunkMap).remove(i);
++                    PlayerChunkMap.c(this.playerChunkMap).remove(this);
++                }
++
++                return;
++            }
++            // CraftBukkit end
++
+             Chunk chunk = PlayerChunkMap.a(this.playerChunkMap).getChunkAt(this.location.x, this.location.z);
+ 
+             entityplayer.playerConnection.sendPacket(new Packet51MapChunk(chunk, true, 0));
++            this.players.remove(entityplayer);
+             this.b.remove(entityplayer);
+             entityplayer.chunkCoordIntPairQueue.remove(this.location);
+             if (this.b.isEmpty()) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java b/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java
+index afcf764..3439f47 100644
+--- a/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java
++++ b/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java
+@@ -20,6 +20,12 @@ public class ChunkIOExecutor {
+         instance.add(new QueuedChunk(x, z, loader, world, provider), runnable);
+     }
+ 
++    // Abuses the fact that hashCode and equals for QueuedChunk only use world and coords
++    public static void dropQueuedChunkLoad(World world, int x, int z, Runnable runnable) {
++        instance.drop(new QueuedChunk(x, z, null, world, null), runnable);
++    }
++
++
+     public static void adjustPoolSize(int players) {
+         int size = Math.max(BASE_THREADS, (int) Math.ceil(players / PLAYERS_PER_THREAD));
+         instance.setActiveThreads(size);
+-- 
+1.9.0.msysgit.0
+

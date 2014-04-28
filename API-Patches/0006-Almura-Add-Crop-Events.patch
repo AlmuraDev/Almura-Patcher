@@ -1,0 +1,97 @@
+From 374f375a071aeb7ae80b73e5aaf7e562603e32ca Mon Sep 17 00:00:00 2001
+From: Mike Howe <mike@mcsnetworks.com>
+Date: Thu, 27 Mar 2014 19:04:53 -0500
+Subject: [PATCH] (Almura) Add Crop Events
+
+Signed-off-by: Mike Howe <mike@mcsnetworks.com>
+
+diff --git a/src/main/java/com/almuramc/event/block/CropPlantEvent.java b/src/main/java/com/almuramc/event/block/CropPlantEvent.java
+new file mode 100644
+index 0000000..51391fe
+--- /dev/null
++++ b/src/main/java/com/almuramc/event/block/CropPlantEvent.java
+@@ -0,0 +1,46 @@
++package com.almuramc.event.block;
++
++import org.bukkit.event.Cancellable;
++import org.bukkit.event.Event;
++import org.bukkit.event.HandlerList;
++
++public class CropPlantEvent extends Event implements Cancellable {    
++	private static final HandlerList handlers = new HandlerList();
++	private boolean cancel;
++    private boolean custom;
++    private boolean canPlant;
++
++    public CropPlantEvent() {}
++
++    public boolean isCancelled() {    	
++        return cancel;
++    }
++
++    public boolean isCustom() {
++    	return custom;
++    }
++    
++    public boolean canPlant() {
++    	return canPlant;
++    }
++    
++    public void setCustom(boolean custom) {
++    	this.custom = custom;
++    }
++    
++    public void setCancelled(boolean cancel) {
++        this.cancel = cancel;
++    }
++    
++    public void setCanPlant(boolean canPlant) {
++    	this.canPlant = canPlant;
++    }
++
++    public HandlerList getHandlers() {
++        return handlers;
++    }
++
++    public static HandlerList getHandlerList() {
++        return handlers;
++    }
++}
+diff --git a/src/main/java/com/almuramc/event/block/CropPopEvent.java b/src/main/java/com/almuramc/event/block/CropPopEvent.java
+new file mode 100644
+index 0000000..885e492
+--- /dev/null
++++ b/src/main/java/com/almuramc/event/block/CropPopEvent.java
+@@ -0,0 +1,29 @@
++package com.almuramc.event.block;
++
++import org.bukkit.block.Block;
++import org.bukkit.event.Cancellable;
++import org.bukkit.event.Event;
++import org.bukkit.event.HandlerList;
++
++public class CropPopEvent extends Event implements Cancellable {    
++	private static final HandlerList handlers = new HandlerList();
++	private boolean cancel;
++
++    public CropPopEvent(final Block theBlock) {}
++
++    public boolean isCancelled() {    	
++        return cancel;
++    }
++
++    public void setCancelled(boolean cancel) {
++        this.cancel = cancel;
++    }
++
++    public HandlerList getHandlers() {
++        return handlers;
++    }
++
++    public static HandlerList getHandlerList() {
++        return handlers;
++    }
++}
+-- 
+1.9.0.msysgit.0
+

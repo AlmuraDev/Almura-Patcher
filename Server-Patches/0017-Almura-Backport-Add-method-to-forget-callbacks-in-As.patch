@@ -1,0 +1,108 @@
+From 337e4013f458967bfa6e85822c99967b48159cde Mon Sep 17 00:00:00 2001
+From: Steven Downer <grinch@outlook.com>
+Date: Sun, 27 Apr 2014 21:55:03 -0500
+Subject: [PATCH] (Almura) Backport 'Add method to forget callbacks in
+ AsynchronousExecutor' commit
+
+Original commit: 0551358ac4e5748c00ce94a9219d60f11e5e696e
+
+Signed-off-by: Steven Downer <grinch@outlook.com>
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/AsynchronousExecutor.java b/src/main/java/org/bukkit/craftbukkit/util/AsynchronousExecutor.java
+index 8f3e80e..076c1d6 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/AsynchronousExecutor.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/AsynchronousExecutor.java
+@@ -153,8 +153,14 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
+             }
+         }
+ 
++        @SuppressWarnings("unchecked")
+         T get() throws E {
+             initSync();
++            if (callbacks.isEmpty()) {
++                // 'this' is a placeholder to prevent callbacks from being empty during finish call
++                // See get method below
++                callbacks.add((C) this);
++            }
+             finish();
+             return object;
+         }
+@@ -171,6 +177,9 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
+                         if (t != null) {
+                             throw t;
+                         }
++                        if (callbacks.isEmpty()) {
++                            return;
++                        }
+ 
+                         final CallBackProvider<P, T, C, E> provider = AsynchronousExecutor.this.provider;
+                         final P parameter = this.parameter;
+@@ -178,6 +187,11 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
+ 
+                         provider.callStage2(parameter, object);
+                         for (C callback : callbacks) {
++                            if (callback == this) {
++                                // 'this' is a placeholder to prevent callbacks from being empty during finish call
++                                // See get method below
++                                continue;
++                            }
+                             provider.callStage3(parameter, object, callback);
+                         }
+                     } finally {
+@@ -187,6 +201,17 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
+                 case FINISHED:
+             }
+         }
++
++        boolean drop() {
++            if (set(this, PENDING, FINISHED)) {
++                // If we succeed that variable switch, good as forgotten
++                tasks.remove(parameter);
++                return true;
++            } else {
++                // We need the async thread to finish normally to properly dispose of the task
++                return false;
++            }
++        }
+     }
+ 
+     final CallBackProvider<P, T, C, E> provider;
+@@ -220,6 +245,35 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
+     }
+ 
+     /**
++     * This removes a particular callback from the specified parameter.
++     * <p>
++     * If no callbacks remain for a given parameter, then the {@link CallBackProvider CallBackProvider's} stages may be omitted from execution.
++     * Stage 3 will have no callbacks, stage 2 will be skipped unless a {@link #get(Object)} is used, and stage 1 will be avoided on a best-effort basis.
++     * <p>
++     * Subsequent calls to {@link #getSkipQueue(Object)} will always work.
++     * <p>
++     * Subsequent calls to {@link #get(Object)} might work.
++     * <p>
++     * This should always be synchronous
++     * @return true if no further execution for the parameter is possible, such that, no exceptions will be thrown in {@link #finishActive()} for the parameter, and {@link #get(Object)} will throw an {@link IllegalStateException}, false otherwise
++     * @throws IllegalStateException if parameter is not in the queue anymore
++     * @throws IllegalStateException if the callback was not specified for given parameter
++     */
++    public boolean drop(P parameter, C callback) throws IllegalStateException {
++        final Task task = tasks.get(parameter);
++        if (task == null) {
++            throw new IllegalStateException("Unknown " + parameter);
++        }
++        if (!task.callbacks.remove(callback)) {
++            throw new IllegalStateException("Unknown " + callback + " for " + parameter);
++        }
++        if (task.callbacks.isEmpty()) {
++            return task.drop();
++        }
++        return false;
++    }
++
++    /**
+      * This method attempts to skip the waiting period for said parameter.
+      * This should always be synchronous.
+      * @throws IllegalStateException if the parameter is not in the queue anymore, or sometimes if called from asynchronous thread
+-- 
+1.9.0.msysgit.0
+

@@ -1,0 +1,63 @@
+From 575d1b00222cac62c5bde3b39dd9a14cae57b5f0 Mon Sep 17 00:00:00 2001
+From: Mike Howe <mike@mcsnetworks.com>
+Date: Thu, 27 Mar 2014 19:11:04 -0500
+Subject: [PATCH] (Almura) Modification of BlockFlower.java to account for new
+ events
+
+Signed-off-by: Mike Howe <mike@mcsnetworks.com>
+
+diff --git a/src/main/java/net/minecraft/server/BlockFlower.java b/src/main/java/net/minecraft/server/BlockFlower.java
+index 6f032ad..dec828f 100644
+--- a/src/main/java/net/minecraft/server/BlockFlower.java
++++ b/src/main/java/net/minecraft/server/BlockFlower.java
+@@ -2,6 +2,13 @@ package net.minecraft.server;
+ 
+ import java.util.Random;
+ 
++// Almura start
++import org.bukkit.Bukkit;
++
++import com.almuramc.event.block.CropPlantEvent;
++import com.almuramc.event.block.CropPopEvent;
++// Almura end
++
+ public class BlockFlower extends Block {
+ 
+     protected BlockFlower(int i, Material material) {
+@@ -22,7 +29,15 @@ public class BlockFlower extends Block {
+     }
+ 
+     protected boolean g_(int i) {
+-        return i == Block.GRASS.id || i == Block.DIRT.id || i == Block.SOIL.id;
++        // Almura start
++        CropPlantEvent event = new CropPlantEvent();
++        Bukkit.getServer().getPluginManager().callEvent(event);
++        if (!event.isCustom()) {
++            return i == Block.GRASS.id || i == Block.DIRT.id || i == Block.SOIL.id;
++        } else {
++            return event.canPlant();
++        }
++        // Almura end
+     }
+ 
+     public void doPhysics(World world, int i, int j, int k, int l) {
+@@ -36,8 +51,14 @@ public class BlockFlower extends Block {
+ 
+     protected final void e(World world, int i, int j, int k) {
+         if (!this.f(world, i, j, k)) {
+-            this.c(world, i, j, k, world.getData(i, j, k), 0);
+-            world.setTypeIdAndData(i, j, k, 0, 0, 2);
++            // Almura start
++            CropPopEvent event = new CropPopEvent(world.getWorld().getBlockAt(i,j,k));
++            Bukkit.getServer().getPluginManager().callEvent(event);
++            if (!event.isCancelled()) {
++                this.c(world, i, j, k, world.getData(i, j, k), 0);
++                world.setTypeIdAndData(i, j, k, 0, 0, 2);
++            }
++            // Almura end
+         }
+     }
+ 
+-- 
+1.9.0.msysgit.0
+
